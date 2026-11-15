@@ -9,16 +9,16 @@ table{border-collapse:collapse;width:100%}td,th{padding:3px 4px;text-align:left;
 <h1>Repelón Risk Lens – rotation scenario explorer</h1>
 <p class="mut">Screening tool for NASA Space Apps 2026 (Field Shift). Rule-based, no machine learning, <b>not a forecast</b> and not a recommendation. Rainfall: NASA GPM IMERG V07; vegetation: Sentinel-2 (ESA). Thresholds, weights and every scenario setting below are <b>uncalibrated assumptions</b> to be reviewed locally.</p>
 <div class="card"><h2>1. Map: click a parcel</h2><p class="mut"><b>How to use:</b> ① click a parcel on the map (or type its code) → ② move the rainfall bar → ③ edit the monthly calendars → ④ set the farmer’s priorities.</p>
-<div class="grid"><div><div class="row"><select id="mm"><option value="r">Colour: risk level</option><option value="v">Colour: vulnerability</option></select><select id="mf"><option value="">All parcels</option><option value="a">Agricultural only (386)</option></select></div>
+<div style="max-width:660px"><div class="row"><select id="mm"><option value="r">Colour: risk level</option><option value="v">Colour: vulnerability</option></select><select id="mf"><option value="">All parcels</option><option value="a">Agricultural only (386)</option></select></div>
 <canvas id="map" style="width:100%;display:block;border:1px solid var(--bd);border-radius:8px;margin-top:6px;cursor:pointer"></canvas>
 <div class="mut" id="leg">Low <span style="color:#4daf4a">●</span> Moderate <span style="color:#ffb000">●</span> High <span style="color:#d73027">●</span> · dot size ~ area · black ring = selected. Most High dots are tiny bare-soil lots, not crops.</div></div>
-<div id="gw"><b>Cloud cover now (GOES-19 IR, Caribbean)</b><img id="gl" alt="GOES-19 Caribbean infrared" style="width:100%;border-radius:8px;margin-top:6px"><div class="mut" id="gt"></div><div class="mut">Near-real-time image published by NOAA/NESDIS STAR; refreshes every 10 min while this page is open. Visual context only: not used in the model, no forecasting.</div><img id="gg" src="goes_nubosidad_12oct.gif" alt="GOES-19 sequence 12 Oct 2026" style="width:100%;border-radius:8px;margin-top:6px" onerror="this.style.display='none'"></div></div>
+</div></div>
 <div class="row" style="margin-top:8px"><input id="code" list="dl" size="34" aria-label="parcel code"><label style="margin:0"><input type="checkbox" id="all"> list all 1,848 codes (default: 386 agricultural)</label></div><datalist id="dl"></datalist><div id="pinfo"></div></div>
 <div class="card"><h2>2. Rainfall what-if (not a forecast)</h2><label>Rain = <b id="kv"></b>% of the 10-year normal <input type="range" id="k" min="40" max="120" value="100"></label><div id="risk"></div><p class="mut">Vulnerability stays fixed; hazard = 1 − rain/normal; risk = 0.5·hazard + 0.5·vulnerability. The same factor scales the monthly rain below (assumption). A month is “dry” if scaled rain &lt; 50 mm (assumption).</p></div>
 <div class="card"><h2>3. Scenario calendars (editable assumptions)</h2><div class="sc"><table id="cal"></table></div><div class="mut">Source for sowing at the start of the rains: Contexto Ganadero; reserve forage example: AGROSAVIA (see repository). Crop windows are assumptions. Monthly rain: GPM IMERG 2021–2025 mean.</div><div id="met" class="sc"></div></div>
 <div class="card"><h2>4. Farmer priorities → scenario reading</h2><div id="pri"></div><div id="rank"></div><p class="mut">Scores are simple shares computed from the calendars (e.g., water-needing months that are not dry). Plans without a crop score 0 on “sowing with rains”. This is a transparent reading of assumptions, not a yield or income model; soil health is reduced to months with cover.</p></div>
 <p class="mut">Limits: no parcel-level crop data; High class mostly tiny bare-soil lots (not crops); ranking is robust to ±20 % changes, class counts are not; farmer-priority weights are adjustable assumptions. Full text in the repository (README, LIMITACIONES.md, ROTATION_SCENARIOS_EN.md).</p></main>
-<script src="data.js"></script><script>
+<script src="data.js?v=3"></script><script>
 const $=i=>document.getElementById(i),MO='Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),TY=['Pasture','Pasture+reserve','Crop','Cover','Fallow'];
 const PL={A:Array(12).fill(0),B:[1,1,1,0,2,2,2,2,0,0,0,1],C:[3,3,3,4,2,2,2,2,3,3,3,3]},NM={A:'A Current grazing',B:'B Pasture + forage reserve',C:'C Short-cycle crop + cover'};
 const PN=['Low dry-season water exposure','Dry-season feed (reserve)','Soil covered (fewer fallow months)','Sowing with the rains'];
@@ -49,16 +49,14 @@ $('code').value='086060003000000010286000000000';$('code').oninput=show;$('k').o
 const CL={Low:'#4daf4a',Moderate:'#ffb000',High:'#d73027',Critical:'#7f0000'},RK={Low:0,Moderate:1,High:2,Critical:3};let mv=[],sel=null;
 const cv=$('map'),cx=cv.getContext('2d'),LA=PARCELS.map(p=>p[11]),LO=PARCELS.map(p=>p[12]),B={x0:Math.min(...LO),y0:Math.min(...LA),y1:Math.max(...LA),x1:Math.max(...LO)},C0=Math.cos(10.5*Math.PI/180);
 const vcol=v=>`rgb(${77+138*v|0},${175-127*v|0},${74-35*v|0})`;
-function draw(){const dp=devicePixelRatio||1,W=cv.clientWidth;if(!W)return;const wd=(B.x1-B.x0)*C0,H=Math.round(W*(B.y1-B.y0)/wd),m=10,s=(W-2*m)/wd;cv.style.height=H+'px';cv.width=W*dp;cv.height=H*dp;cx.setTransform(dp,0,0,dp,0,0);mv=[];
+function draw(){if(PARCELS[0].length<13)return;const dp=devicePixelRatio||1,W=cv.clientWidth;if(!W)return;const wd=(B.x1-B.x0)*C0,H=Math.round(W*(B.y1-B.y0)/wd),m=10,s=(W-2*m)/wd;cv.style.height=H+'px';cv.width=W*dp;cv.height=H*dp;cx.setTransform(dp,0,0,dp,0,0);mv=[];
 const md=$('mm').value,oa=$('mf').value=='a';
 PARCELS.filter(p=>!oa||p[10]).sort((a,b)=>(a[10]-b[10])||(RK[a[7]]-RK[b[7]])).forEach(p=>{const x=m+(p[12]-B.x0)*C0*s,y=H-m-(p[11]-B.y0)*s,r=Math.min(9,2+Math.sqrt(p[1])*.6);cx.globalAlpha=p[10]?.95:.55;cx.fillStyle=md=='r'?CL[p[7]]:vcol(p[4]);cx.beginPath();cx.arc(x,y,r,0,7);cx.fill();mv.push([x,y,r,p[0]])});
 const q=mv.find(v=>v[3]==sel);if(q){cx.globalAlpha=1;cx.lineWidth=2.5;cx.strokeStyle='#fff';cx.beginPath();cx.arc(q[0],q[1],q[2]+4,0,7);cx.stroke();cx.lineWidth=1.5;cx.strokeStyle='#000';cx.beginPath();cx.arc(q[0],q[1],q[2]+4,0,7);cx.stroke()}
 $('leg').innerHTML=(md=='r'?'Low <span style="color:#4daf4a">●</span> Moderate <span style="color:#ffb000">●</span> High <span style="color:#d73027">●</span>':'Vulnerability: low <span style="color:#4daf4a">●</span> → high <span style="color:#d73027">●</span>')+' · dot size ~ area · black ring = selected. Most High dots are tiny bare-soil lots, not crops.'}
 cv.onclick=e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let bs=null,bd=1e9;mv.forEach(v=>{const d=Math.hypot(v[0]-x,v[1]-y)-v[2];if(d<=bd){bd=d;bs=v}});if(bs&&bd<12){$('code').value=bs[3];show()}};
 $('mm').onchange=$('mf').onchange=draw;addEventListener('resize',draw);
-const G='https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/car/13/1000x1000.jpg';
-function live(){$('gl').src=G+'?t='+Date.now();$('gt').textContent='Fetched by your browser at '+new Date().toLocaleTimeString()}
-$('gl').onload=()=>{$('gw').querySelector('b').style.display=''};$('gl').onerror=()=>{$('gl').style.display='none';$('gt').textContent='Live image unavailable right now (NOAA server).'};$('gl').onload=()=>{$('gl').style.display=''};
-live();setInterval(live,600000);
+
+if(PARCELS[0].length<13)$('leg').innerHTML='<b style="color:#d98e04">Map data missing: upload the latest data.js (about 186 KB) to the repository and reload with Ctrl+F5.</b>';
 fill();show();
 </script></body></html>
