@@ -1,79 +1,230 @@
 # Repelón Risk Lens
-**Parcel-level agroclimatic risk and rotation scenarios for Repelón (Atlántico, Colombia)**
+
+**Environmental vulnerability screening and agricultural rotation exploration for Repelón, Atlántico, Colombia**
+
 NASA Space Apps Challenge 2026 · *Field Shift: Adapting Farms with NASA Data*
 
-**Live demo:** https://sasantos02.github.io/nasa-space-apps-repelon/  
-**Start here:** [How it works](#how-it-works) · [Results](#results) · [Limitations](LIMITATIONS.md) · [Rotation scenarios](06_documentos/ROTATION_SCENARIOS_EN.md) · [Notebook guide](02_cuaderno/NOTEBOOK_GUIDE_EN.md)
+**Live demo:** https://sasantos02.github.io/nasa-space-apps-repelon/
 
-## What it is
-Repelón Risk Lens is a transparent, rule-based prototype (no machine learning) that screens 1,848 cadastral parcels across Repelón, Atlántico, using satellite-derived environmental indicators. Within this dataset, 386 parcels are classified as predominantly agricultural or grassland according to ESA WorldCover 2021. The tool combines rainfall data from NASA GPM IMERG, vegetation indicators from Sentinel-2, cadastral boundaries, land-cover information and municipal agricultural statistics. This distinction is important: environmental screening covers the full parcel dataset, while agricultural interpretation requires additional caution and local validation.
+**Project guide:** [Methodology](#how-it-works) · [Results](#what-we-found) · [Rotation scenarios](#exploring-agricultural-alternatives) · [Limitations](LIMITATIONS.md) · [Data sources](#data-sources)
 
-The tool connects two tasks: **(1) observe and screen environmental conditions at parcel level; (2) explore three illustrative management scenarios**—the current-practice baseline and two alternatives—using editable calendars and adjustable priority weights. Each scenario states its evidence, assumptions, information gaps and risks requiring local review.
+## 1. Project overview
 
-**What it is not:** it does not identify the actual crop or rotation on each parcel, simulate yields or income, measure complete soil health, forecast weather, or identify a universally best rotation. Its scenario scores are calendar-based exploratory indicators, not agronomic predictions or farmer-survey results. It supports, but does not replace, farmers and local technicians.
+Repelón Risk Lens is a transparent, rule-based prototype (no machine learning) designed to screen environmental vulnerability across **1,848 cadastral parcels** in Repelón, Atlántico, and explore alternative agricultural management scenarios.
 
-## How it works
-1. **Observe:** use cadastral boundaries to organize parcel-level outputs; use Sentinel-2 indices to describe vegetation greenness/moisture and NASA GPM IMERG to compare recent rainfall with a historical reference.
-2. **Screen:** combine vegetation vulnerability and rainfall deficit in a transparent rule-based index. Land-cover labels and SoilGrids clay are supporting context, not proof of crop identity or a complete soil diagnosis.
-3. **Explore:** compare three illustrative management calendars. Users can change rainfall assumptions, edit calendar months and adjust four priority weights to see how the scenario ordering changes.
-4. **Interpret carefully:** consult the limitations and scenario notes before treating any result as a basis for field decisions.
+The project combines rainfall observations from NASA GPM IMERG with vegetation indicators from Sentinel-2, cadastral boundaries, land-cover information and municipal agricultural statistics.
 
-**Important reading:** [Limitations and uncertainty](06_documentos/LIMITATIONS.md) · [Rotation scenarios and their assumptions](06_documentos/ROTATION_SCENARIOS_EN.md).
+Within the 1,848-parcel dataset, approximately 386 parcels are classified as predominantly agricultural or grassland according to ESA WorldCover 2021. This distinction matters: environmental screening covers the full cadastral dataset, but agricultural interpretation requires additional caution and local validation.
 
-## Method (all thresholds and weights are uncalibrated assumptions)
-- **Vulnerability** V = 0.4·stress(NDVI) + 0.4·stress(NDMI) + 0.2·stress(SAVI), from Sentinel-2 (ESA), stress = clip((healthy − x)/(healthy − critical), 0, 1).
-- **Hazard** A = clip(1 − rain / normal, 0, 1): 60-day rainfall (NASA GPM IMERG V07) against the same window in the previous 10 years.
-- **Risk** R = 0.5·A + 0.5·V. Classes: Moderate > 0.25, High > 0.50, Critical > 0.75, otherwise Low.
+The project addresses two connected questions:
 
-## Results (run of 2026-11-15, 1,848 unique parcels)
-| | Result |
-|---|---|
+1. **Where do satellite-derived indicators suggest environmental vulnerability?**
+2. **How could alternative agricultural management strategies be explored under different rainfall conditions and priorities?**
+
+Repelón Risk Lens does not automatically prescribe a crop or rotation for any parcel. Instead, it provides an initial screening tool and an exploratory environment for comparing alternatives.
+
+## 2. How it works
+
+The project follows four stages:
+
+### 1. Observe — Understand environmental conditions
+
+Cadastral boundaries provide the spatial framework for organizing parcel-level results.
+
+Sentinel-2 vegetation indices describe vegetation greenness and moisture conditions, while NASA GPM IMERG provides rainfall estimates for examining recent precipitation against a historical reference.
+
+Additional datasets, including ESA WorldCover, SoilGrids and municipal agricultural statistics, provide territorial and agricultural context.
+
+### 2. Screen — Identify environmental vulnerability
+
+The observed indicators are combined into a transparent rule-based index.
+
+Vegetation indicators represent environmental vulnerability, while rainfall deficit represents climatic hazard. Their combination produces a screening score that helps identify parcels requiring closer examination.
+
+Land-cover classifications and soil clay information provide supporting context. They do not establish actual crop identity or constitute a complete soil diagnosis.
+
+### 3. Explore — Compare agricultural alternatives
+
+The project includes three illustrative management scenarios:
+
+- Current practice: extensive grazing.
+- Alternative B: pasture combined with a dry-season forage reserve.
+- Alternative C: short-cycle crops during the rainy season with soil cover during the dry season.
+
+Each scenario includes its rationale, supporting evidence, assumptions, potential benefits and information gaps.
+
+Users can modify rainfall assumptions, edit calendar months and adjust four illustrative priority weights. These controls change the relative ordering of scenarios using simple calendar-derived indicators.
+
+They do not simulate crop growth, yields or farm profitability.
+
+### 4. Interpret — Support informed local assessment
+
+The results are intended to help identify conditions that deserve attention and questions that require further investigation.
+
+The environmental screening and rotation scenarios are complementary components, not a fully integrated agronomic recommendation system.
+
+Local producers, agricultural technicians and field information are necessary to evaluate whether a particular alternative is suitable for an individual parcel.
+
+## 3. Methodology
+
+All thresholds and weights are **uncalibrated assumptions** used to construct an exploratory screening index.
+
+**Vegetation vulnerability (V)**
+
+V = 0.4 × stress(NDVI) + 0.4 × stress(NDMI) + 0.2 × stress(SAVI)
+
+The three indices are derived from Sentinel-2 imagery (ESA). The stress function compares observed values against predefined healthy and critical reference thresholds.
+
+**Rainfall hazard (A)**
+
+A = clip(1 − rainfall / normal rainfall, 0, 1)
+
+The calculation uses a 60-day rainfall window from NASA GPM IMERG V07, compared with the same period in the previous ten years.
+
+**Combined screening score (R)**
+
+R = 0.5 × A + 0.5 × V
+
+The score combines the rainfall hazard and vegetation vulnerability components.
+
+The resulting classes are indicative, not validated agricultural risk categories. Their interpretation depends on the selected thresholds and weights.
+
+## 4. What we found
+
+**Results from the 15 November 2026 analysis — 1,848 unique parcels.**
+
+| Indicator | Result |
+|---|---:|
 | Low / Moderate / High | 1,074 / 736 / 38 |
-| Mean vulnerability inside / outside the irrigation district | 0.29 / 0.47 (pasture-only parcels: 0.26 / 0.43) |
-| Rainfall in the window | 96 % of the 10-year normal |
-| Ranking robustness (1,000 random ±20 % changes of thresholds and weights) | Spearman ≥ 0.996 for vulnerability; **High class count ranges 0–441** |
-| Independent recalculation of all parcels | max difference 0.0001 |
-| GPM IMERG vs ERA5-Land monthly rainfall (2021–2025) | correlation 0.88; GPM ≈ 14 % lower |
+| Mean vulnerability inside the irrigation district | 0.29 |
+| Mean vulnerability outside the irrigation district | 0.47 |
+| Pasture-only vulnerability, inside / outside | 0.26 / 0.43 |
+| Rainfall during the analyzed window | 96% of the 10-year normal |
+| Vulnerability ranking robustness | Spearman ≥ 0.996 |
+| Independent recalculation maximum difference | 0.0001 |
+| GPM vs ERA5-Land monthly rainfall correlation (2021–2025) | 0.88 |
 
-**Read this first (what we can and cannot claim)**
-- The **ranking** is stable; the **High label is not**, and it is mostly an artifact: 36 of the 38 High parcels are dominated by bare-soil cover (ESA WorldCover 2021) and 36 are tiny lots (< 0.1 ha, flagged `baja_confianza`); 37 of 38 are non-agricultural. We do **not** interpret them as crops under stress.
-- The irrigation-district contrast is an **association, not causation**; "outside the district" does not mean rainfed.
-- The model cannot distinguish crops from woodland, pasture or bare soil; high NDVI does not mean a healthy crop.
-- ESA WorldCover marks only 359 ha as cropland, versus 6,146–7,967 ha planted according to UPRA EVA (2025–2024): the cover map likely underestimates cropland, or our parcels cover only part of the municipality (24,108 ha of 35,172 ha).
-- No field validation. No parcel-level crop data.
+### How should these results be interpreted?
 
-## Rotation scenarios
-See [`06_documentos/ROTATION_SCENARIOS_EN.md`](06_documentos/ROTATION_SCENARIOS_EN.md). Every statement is tagged **[OWN DATA]**, **[CITED]** or **[ASSUMPTION]**. Includes a what-if rainfall table (100 / 80 / 60 % of normal): High parcels go 0 → 420 → 597. This is *not* a forecast.
+The sensitivity analysis indicates that the relative vulnerability ranking is robust to tested changes in thresholds and weights. However, the number of parcels classified as High varies substantially, from 0 to 441 under random ±20% changes.
 
-## Alignment with the challenge brief
-| Brief element | Status |
+Therefore, the ranking is more informative than treating the risk classes as definitive labels.
+
+The 38 parcels classified as High require particular caution:
+
+- 36 are dominated by bare-soil cover.
+- 36 are smaller than 0.1 hectares and flagged as low confidence.
+- 37 are classified as non-agricultural.
+
+They should not be interpreted as 38 agricultural parcels experiencing crop stress.
+
+The lower mean vulnerability observed inside the irrigation district is an association, not evidence that irrigation alone caused the difference. Being outside the district does not necessarily mean a parcel is rainfed.
+
+Another important limitation is the difference between ESA WorldCover and UPRA agricultural statistics. WorldCover identifies substantially less cropland than the municipal planted-area figures reported by UPRA EVA. This indicates that land-cover classification and cadastral coverage require additional verification before drawing conclusions about agricultural land use.
+
+## 5. Exploring agricultural alternatives
+
+The project compares three illustrative scenarios to examine how different management calendars relate to the local rainfall pattern.
+
+| Scenario | Main idea |
 |---|---|
-| NASA Earth observations | **Covered, thin:** GPM IMERG V07 only (~11 km, so hazard varies little between parcels; Sentinel-2 drives the ranking) |
-| Local soil information | **Partial:** ISRIC SoilGrids clay 0–5 cm, global 250 m (not local), context only, not in the risk score; 1,180 of 1,848 unique parcels have a value (tiny parcels return none) |
-| Crop characteristics | **Partial:** qualitative, from cited sources (UPRA EVA, AGROSAVIA); no crop parameters |
-| Farmer priorities | **Partial:** four adjustable illustrative weights re-rank three scenarios using calendar-derived indicators; they are not farmer-survey data and have no field validation |
-| Explore rotation strategies | **Partial:** 3 scenarios with assumptions; a calendar-overlap reading; no simulation |
-| Adapt to changing conditions | **Covered at screening level:** rainfall what-if scenarios |
-| Make uncertainty visible | **Covered:** sensitivity test, limitations, labelled assumptions |
+| A. Current practice | Extensive grazing |
+| B. Forage reserve | Pasture combined with dry-season forage conservation |
+| C. Seasonal cropping | Short-cycle crops during the rainy season and soil cover during the dry season |
 
-## Data sources
-- **NASA:** GPM IMERG V07 (rainfall).
-- **Other agencies/providers (not NASA):** Sentinel-2 and ESA WorldCover 2021 (ESA/Copernicus); ERA5-Land (ECMWF), rainfall cross-check only; ISRIC SoilGrids (soil clay, context only); GOES-19 imagery (NOAA), visual context only, not in the model; UPRA EVA 2019–2025 (planted area); irrigation district registry (ADR) and polygon (UPRA, ANT); Repelón cadastre.
+The scenarios use local rainfall patterns, municipal agricultural statistics and supporting references to establish their context.
 
-## Repository map
-- `02_cuaderno/` Colab notebook (Earth Engine) that produces the results.
-- `03_salidas_finales/` final parcel table (`predios_para_demo_2026-11-15.csv`), monthly calendar, example-parcel NDVI curve.
-- `index.html`, `data.js`, `geo.js` interactive map (parcel polygons from the cadastral layer, Esri imagery base map, rainfall what-if, editable rotation calendars and four illustrative priority sliders).
-- `complementary_analysis.py` → `tables/` (sensitivity, rain what-if, EVA by crop); `figures/` (risk map, district contrast, monthly calendar, rainfall scenarios).
-- `01_entradas/` inputs (district tables, EVA); `04_historico/` archived comparison runs; `05_evidencia/` visual checks; `06_documentos/` public methodology, limitations and scenario documentation.
-- Parcel codes have 30 digits: open the CSVs as text or with Python (Excel corrupts them).
+Their calendars and priority weights can be adjusted in the interactive application. The resulting scores are exploratory comparisons based on assumed calendar conditions.
 
-## Reproduce
-Run the notebook in Google Colab with an Earth Engine project, then run `python complementary_analysis.py` from the repository root.
+**Important:** the project does not know the actual crop or rotation of each cadastral parcel. The scenarios are not parcel-specific agronomic recommendations and have not been validated with local farmers.
 
-## Use of AI
-Code and documentation were drafted with AI assistants. The author defined the question and method and verified the results (independent recalculation, visual checks, ERA5-Land cross-check, sensitivity test).
-## Next steps
-1. Validate the illustrative calendars and priority weights with farmers and local technicians (UMATA), and develop a defensible link between parcel conditions and scenario suitability.
-2. Improve local soil and crop information (e.g., IGAC records and parcel-level field data); compare rainfall with IDEAM stations.
-3. Evaluate additional Earth-observation layers (e.g., SMAP, MODIS or NASA POWER). They are not used in this version.
+For the detailed assumptions, evidence and information gaps, see [Rotation scenarios](06_documentos/ROTATION_SCENARIOS_EN.md).
+
+## 6. Exploring rainfall changes
+
+The application includes rainfall what-if scenarios at:
+
+- 100% of normal rainfall.
+- 80% of normal rainfall.
+- 60% of normal rainfall.
+
+These scenarios scale the observed rainfall and recalculate the screening score while keeping vegetation vulnerability fixed.
+
+They allow users to examine how lower rainfall could affect the screening results.
+
+They are **not weather forecasts or climate projections**.
+
+## 7. Alignment with the challenge
+
+| Challenge element | Project contribution |
+|---|---|
+| NASA Earth observations | GPM IMERG V07 rainfall estimates |
+| Local soil information | SoilGrids clay content as contextual information |
+| Crop characteristics | Qualitative information from UPRA EVA and AGROSAVIA |
+| Farmer priorities | Four adjustable illustrative weights, not survey-derived preferences |
+| Rotation strategies | Three exploratory scenarios with editable calendars |
+| Changing environmental conditions | Rainfall what-if analysis |
+| Uncertainty and transparency | Sensitivity analysis, assumptions and documented limitations |
+
+The project addresses these elements at prototype level. It does not claim to provide a complete agricultural decision-support system.
+
+## 8. Data sources
+
+**NASA**
+- GPM IMERG V07 — precipitation estimates.
+
+**Other Earth observation and environmental sources**
+- Sentinel-2 — vegetation indices (ESA/Copernicus).
+- ESA WorldCover 2021 — land-cover classification.
+- ERA5-Land — rainfall cross-check (ECMWF).
+- ISRIC SoilGrids — clay content, contextual information only.
+- GOES-19 — visual context only; not integrated into the model.
+
+**Agricultural and territorial information**
+- UPRA EVA 2019–2025 — municipal planted-area statistics.
+- Agricultural irrigation district registry (ADR).
+- UPRA and ANT spatial information.
+- Repelón cadastral parcel boundaries.
+
+NASA GPM IMERG is the principal NASA dataset used in the current screening model. The other datasets provide complementary environmental, agricultural or territorial context.
+
+## 9. Repository structure
+
+- `02_cuaderno/` — Google Colab notebook and methodology guide.
+- `03_salidas_finales/` — final parcel table, monthly calendar and example-parcel NDVI curve.
+- `index.html`, `data.js`, `geo.js` — interactive web application.
+- `complementary_analysis.py` — sensitivity analysis, rainfall scenarios and agricultural statistics.
+- `tables/` and `figures/` — supporting analysis outputs.
+- `01_entradas/` — input datasets.
+- `04_historico/` — archived analysis runs.
+- `05_evidencia/` — visual checks.
+- `06_documentos/` — scenario documentation and supporting materials.
+- `LIMITATIONS.md` — limitations, uncertainty and validation status.
+
+**Note:** cadastral parcel codes contain 30 digits. Open CSV files as text or use Python; Excel may alter these identifiers.
+
+## 10. Reproducing the analysis
+
+1. Open the Google Colab notebook in `02_cuaderno/`.
+2. Configure a Google Earth Engine project.
+3. Run the notebook to produce the parcel-level outputs.
+4. Run `python complementary_analysis.py` from the repository root to reproduce the complementary analyses.
+
+## 11. Limitations and future work
+
+The current prototype has not been validated with field measurements or parcel-level crop records.
+
+Its principal limitations include uncalibrated thresholds, coarse rainfall resolution, incomplete land-cover representation, limited soil information and the absence of crop-growth or yield simulations.
+
+Future development should prioritize:
+
+1. Validation of scenario calendars and priority weights with local producers and agricultural technicians (UMATA).
+2. Better parcel-level soil and crop information.
+3. Comparison of rainfall estimates with IDEAM station observations.
+4. A more defensible connection between parcel conditions and agricultural scenario suitability.
+
+For a detailed account of uncertainty, sensitivity and validation, see [Limitations and observations](LIMITATIONS.md).
+
+## 12. Use of AI
+
+AI assistants supported the drafting of code and documentation. The project author defined the research question and methodology and reviewed the outputs through independent recalculation, visual checks, rainfall cross-comparison and sensitivity analysis.
