@@ -92,10 +92,11 @@ pl.forEach((t,i)=>{if(dry[i]){dm++;if(t==1)dr++}if(t<=2){w++;if(dry[i])wd++}if(t
 return{w,wd,dm,dr,c,cd,f,s:[w?1-wd/w:1,dm?dr/dm:1,1-f/12,c?1-cd/c:0]}}
 function sentence(p,R,k){const v=p[4],vt=v<.25?'green and moist':v<.5?'moderately stressed':'dry or sparse';
 return `<p style="margin:.4em 0">This is <b>${p[3].toLowerCase()}</b>, ${p[1]} ha, ${p[2]?'inside':'outside'} the irrigation district. Its vegetation looks <b>${vt}</b> (vulnerability ${p[4]}). In the 60-day window it received ${p[5]} % of the normal rain.</p>`}
+function mulb(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function show(){const p=PARCELS.find(x=>x[0]===$('code').value.trim());if(!p){$('pinfo').innerHTML='<p class="mut">Pick a parcel on the map, or choose a code from the list.</p>';return}
 if(cur!==p[0]){cur=p[0];sel=p[0];$('k').value=Math.min(120,Math.max(40,Math.round(p[5])));try{history.replaceState(null,'','#p='+p[0])}catch(e){}draw()}
 const k=$('k').value/100;$('kv').textContent=$('k').value;const A=Math.max(0,1-k),R=.5*A+.5*p[4],L=lvl(R);
-$('pinfo').innerHTML=`<div class="row"><span class="badge" style="background:${CL[p[7]]}">${p[7]}</span><span class="mut">risk in this run: ${p[6]}</span></div>`+sentence(p,R,k)+`<table><tr><td class="mut">Cover (WorldCover 2021)</td><td>${p[3]}</td></tr><tr><td class="mut">Clay 0–5 cm (SoilGrids, context)</td><td>${p[8]==null?'no data':p[8]+' %'}</td></tr></table>`+((p[9]||!p[10])?'<div class="warn">Small or non-agricultural parcel: do not read this result as crop stress.</div>':'');
+$('pinfo').innerHTML=`<div class="row"><span class="badge" style="background:${CL[p[7]]}">${p[7]}</span><span class="mut">risk in this run: ${p[6]}</span></div>`+sentence(p,R,k)+`<table><tr><td class="mut">Cover (WorldCover 2021)</td><td>${p[3]}</td></tr><tr><td class="mut">Clay 0–5 cm (SoilGrids, context)</td><td>${p[8]==null?'no data':p[8]+' %'}</td></tr></table>`+((p[9]||!p[10])?'<div class="warn">Small or non-agricultural parcel: do not read this result as crop stress.</div>':'')+'<div class="mut" style="margin-top:6px"><b>To judge an alternative for this parcel you would still need</b> (requires local verification): current crop or cover · water available for irrigation · soil and drainage · planned sowing date · machinery and resources.</div>';
 $('risk').innerHTML=`<div class="row"><span class="big" style="color:${CL[L]}">${R.toFixed(2)}</span><span class="badge" style="background:${CL[L]}">${L}</span></div><span class="mut">risk at ${$('k').value} % of normal rain (hazard ${A.toFixed(2)})${L!==p[7]?' · it changes from '+p[7]+' at observed rain':''}</span>`;
 document.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',+b.dataset.k===+$('k').value));
 const dry=CAL.map(x=>x*k<50);
@@ -106,7 +107,7 @@ $('met').innerHTML='<table><tr><th>Scenario</th><th>Water-needing months</th><th
 const W=[...document.querySelectorAll('#pri input')].map(i=>+i.value);if(!W.length)return;
 const sc=(m,w)=>{const t=w.reduce((a,b)=>a+b,0);return t?m.s.reduce((a,v,i)=>a+v*w[i],0)/t:0};
 const top=w=>res.map(r=>({n:r.n,v:sc(r.m,w)})).sort((a,b)=>b.v-a.v);const rk=top(W),cnt={A:0,B:0,C:0};
-for(let i=0;i<300;i++)cnt[top(PN.map(()=>Math.random()))[0].n]++;
+const rg=mulb(2026);for(let i=0;i<300;i++)cnt[top(PN.map(()=>rg()))[0].n]++;
 const mx=Math.max(cnt.A,cnt.B,cnt.C),dom=mx>=210;
 $('rank').innerHTML=rk.map(r=>`<div class="rk"><span>${NM[r.n]}</span><div class="trk"><div class="bar" style="width:${Math.round(r.v*100)}%"></div></div><b>${r.v.toFixed(2)}</b></div>`).join('')+`<p class="mut">Top scenario under 300 random priority settings: A ${Math.round(cnt.A/3)} % · B ${Math.round(cnt.B/3)} % · C ${Math.round(cnt.C/3)} %. ${dom?'One scenario leads under most priority settings, but only because of how the calendars above are defined (e.g., B combines reserve feed and a crop window). That reflects our assumptions, not field evidence: edit the calendars and see it change.':'No scenario dominates: the choice depends on the farmer’s priorities and on local review; there is no single winner.'}</p>`}
 $('pri').innerHTML=PN.map(n=>`<label>${n}: <input type="range" min="0" max="5" value="3"></label>`).join('');
