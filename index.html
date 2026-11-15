@@ -44,7 +44,7 @@ label{display:block;margin:6px 0}
 
 <div class="layout">
 <section class="card" style="margin:0"><h2>Map of Repelón parcels</h2>
-<div class="row"><select id="mm" aria-label="colour by"><option value="r">Colour by risk level</option><option value="v">Colour by vulnerability</option></select>
+<div class="row"><select id="mm" aria-label="colour by"><option value="r">Colour by risk level</option><option value="v">Colour by vulnerability</option><option value="n">No colour (outlines only – see the ground)</option></select>
 <select id="mf" aria-label="filter"><option value="">All parcels (1,848)</option><option value="a">Agricultural only (386)</option></select>
 <select id="mb" aria-label="base map"><option value="sat">Satellite</option><option value="osm">Streets</option><option value="none">No base map</option></select></div>
 <div class="mapbox" id="mapbox"><canvas id="map"></canvas>
@@ -139,9 +139,9 @@ const col=md=='r'?CL[p[7]]:vcol(p[4]),tiny=(X1-X0)<6&&(Y1-Y0)<6;cx.beginPath();
 if(tiny){const mxc=(X0+X1)/2,myc=(Y0+Y1)/2;cx.rect(mxc-3,myc-3,6,6);if(!hl)hit.push({g,tiny:true,x:mxc,y:myc})}
 else{g.polys.forEach(r=>{r.forEach((q,i)=>{const X=ox+q[0]*s,Y=oy+q[1]*s;i?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.closePath()});if(!hl)hit.push({g,tiny:false,bx:[X0,Y0,X1,Y1]})}
 if(hl){cx.lineWidth=5;cx.strokeStyle='#fff';cx.stroke();cx.lineWidth=2;cx.strokeStyle='#000';cx.stroke();return}
-cx.globalAlpha=p[10]?.8:.5;cx.fillStyle=col;cx.fill();cx.globalAlpha=1;cx.lineWidth=tiny?1:1.1;cx.strokeStyle='rgba(255,255,255,.9)';cx.stroke()}
+if(md!='n'){cx.globalAlpha=p[10]?.8:.5;cx.fillStyle=col;cx.fill();cx.globalAlpha=1}cx.lineWidth=md=='n'?1.8:(tiny?1:1.1);cx.strokeStyle=md=='n'?'#ffeb3b':'rgba(255,255,255,.9)';cx.stroke()}
 list.forEach(g=>paint(g,false));if(sg)paint(sg,true);
-$('leg').innerHTML=(md=='r'?['Low','Moderate','High'].map(k=>`<span class="sw" style="background:${CL[k]}"></span>${k}`).join(''):'Vulnerability <span class="sw" style="background:'+vcol(0)+'"></span>low <span class="sw" style="background:'+vcol(1)+'"></span>high')+'<br><span class="mut">Faded = not agricultural (trees, bare soil, built-up). Most High parcels are tiny bare-soil lots, not crops.</span>'}
+$('leg').innerHTML=(md=='n'?'Outlines only: yellow lines are parcel boundaries. Compare with the satellite image to see crops, trees or bare soil.':md=='r'?['Low','Moderate','High'].map(k=>`<span class="sw" style="background:${CL[k]}"></span>${k}`).join(''):'Vulnerability <span class="sw" style="background:'+vcol(0)+'"></span>low <span class="sw" style="background:'+vcol(1)+'"></span>high')+'<br><span class="mut">'+(md=='n'?'':'Faded = not agricultural (trees, bare soil, built-up). Most High parcels are tiny bare-soil lots, not crops.')+'</span>'}
 function pickAt(px,py){let best=null,ba=1e9;hit.forEach(h=>{let ok=false;if(h.tiny)ok=Math.hypot(h.x-px,h.y-py)<=7;else if(px>=h.bx[0]-2&&px<=h.bx[2]+2&&py>=h.bx[1]-2&&py<=h.bx[3]+2){const s=S(),ox=W/2-V.x*s,oy=H/2-V.y*s;ok=h.g.polys.some(r=>inPoly(px,py,r.map(q=>[ox+q[0]*s,oy+q[1]*s])))}
 if(ok&&h.g.p[1]<ba){ba=h.g.p[1];best=h.g}});return best}
 /* gestures */
