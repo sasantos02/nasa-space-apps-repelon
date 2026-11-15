@@ -23,24 +23,30 @@ Parcel 086060003000000010286000000000. Tags: **[OWN DATA]** computed in this pro
 
 ## C. Short-cycle crop in the rainy season, cover in the dry season
 - **Why:** uses the calendar (rain Apr–Nov, dry Dec–Mar) [OWN DATA]. Maize, cassava, yam and beans are traditionally sown at the start of the rains, late April to May [CITED: Contexto Ganadero]. The crop window May–August is an [ASSUMPTION]; sown at that window, 0 of its months are below 50 mm [OWN DATA], which is largely a consequence of the window we chose.
-- **Evidence:** EVA reports maize and cassava among the largest crops [CITED]; about 70 % of transitory sowing is in the first semester [CITED, own calculation]. A legume rotation with cereals is recommended by UPRA as reported by Agronegocios [CITED, to verify].
+- **Evidence:** EVA reports maize and cassava among the largest crops [CITED]; about 70 % of transitory sowing is in the first semester [CITED, own calculation]. UPRA's director recommends sowing soybean in rotation with rice or maize for soil reasons, as reported by Agronegocios (3 Nov 2023) [CITED, verified 15 Nov 2026]. This is a national statement tied to the soybean expansion in the Llanos Orientales: it is **not** evidence that soybean suits Repelón.
 - **Benefits:** possible diversification [ASSUMPTION]; soil cover in the dry season is an [ASSUMPTION].
 - **Information gaps:** soil, irrigation (the parcel is outside the district), seed, market, costs, yields.
 - **Risks needing local review:** short-cycle crops are the most exposed to a shifting rain calendar [CITED: Contexto Ganadero]; water access is unknown.
 
+## Parcel counts used in the explorer
+"Agricultural" = ESA WorldCover cropland + grassland ≥ 50 % of the parcel: **386 unique parcels** (343 grassland-dominated, 39 cropland-dominated, 3 tree-dominated and 1 shrub-dominated). The other 1,462 parcels are non-agricultural or of uncertain use: their score is shown as an environmental reading, not as crop stress.
+
+## The four priority controls (all assumptions)
+Each editable calendar gets four scores from 0 to 1; the sliders weight them. They are simple shares, not yield or income models.
+1. **Low dry-season water exposure** = 1 − (water-needing months that are dry ÷ water-needing months). Water-needing = pasture, pasture + reserve or crop; a month is dry if the scaled monthly rain is below 50 mm.
+2. **Dry-season feed (reserve)** = dry months with reserve feed ÷ dry months.
+3. **Soil covered** = 1 − fallow months ÷ 12 (the only proxy for soil health here).
+4. **Sowing with the rains** = crop months that are not dry ÷ crop months (0 if the plan has no crop).
+The page repeats the ranking under 300 random slider settings. If one scenario leads, that comes from how the calendars are defined (B combines reserve feed and a crop window), not from field evidence.
+
 ## Not covered and important limitations
-Farmer priorities are partially implemented through four adjustable weights that re-rank the three scenarios using simple indicators derived from their editable calendars. These weights are illustrative assumptions, not preferences collected through farmer surveys, and have not been validated with local producers or technicians.
+Farmer priorities are partially implemented through four adjustable weights that re-rank the three scenarios. These weights are illustrative assumptions, not preferences collected through farmer surveys, and have not been validated with local producers or technicians.
 
-The tool does not simulate crop growth, yields, income, nutrient cycling, or long-term soil-health changes. Actual crops and rotations at individual parcel level are unknown.
+The tool does not simulate crop growth, yields, income, nutrient cycling or long-term soil-health changes. Soil organic carbon, erosion and nutrient availability are not assessed. Actual crops and rotations at parcel level are unknown. The scenarios are exploratory comparisons to support discussion and local assessment, not agronomic recommendations.
 
-The scenarios are exploratory comparisons intended to support discussion and local assessment, not agronomic recommendations.
-
-The tool does not simulate crop growth, yields, income, nutrient cycling, or long-term soil-health changes. Soil organic carbon, erosion and nutrient availability are not assessed. Actual crops and rotations at individual parcel level are unknown.
-
-The scenarios are exploratory comparisons intended to support discussion and local assessment, not agronomic recommendations.
-## Sources (open each link and confirm the wording before submitting)
+## Sources (the Agronegocios link was opened and checked; confirm the wording of the two Contexto Ganadero links before submitting)
 - UPRA, Evaluaciones Agropecuarias Municipales (EVA) 2019–2025, file in `01_entradas/`.
 - Contexto Ganadero, silage of sorghum and maize for Atlántico livestock producers (AGROSAVIA): https://www.contextoganadero.com/ganaderia-sostenible/ganaderos-del-atlantico-reciben-silo-de-sorgo-y-maiz-para-sus-animales
 - Contexto Ganadero, agricultural cycles and the changing calendar: https://www.contextoganadero.com/agricultura/ciclos-agropecuarios-ya-no-obedecen-al-calendario-cambio-climatico-altera-siembras-y-aumenta-incertidumbre-en-el-campo
-- Agronegocios, transitory-crop sown area, first semester 2023: https://www.agronegocios.co/agricultura/hectareas-sembradas-de-cultivos-transitorios-primer-semestre-de-2023-3742827
+- Agronegocios (3 Nov 2023), transitory-crop sown area, first semester 2023, with UPRA's soybean-with-rice-or-maize recommendation: https://www.agronegocios.co/agricultura/hectareas-sembradas-de-cultivos-transitorios-primer-semestre-de-2023-3742827
 - UPRA, Microanálisis de evaluaciones agropecuarias 2023, Atlántico.
