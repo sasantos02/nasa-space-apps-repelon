@@ -1,0 +1,66 @@
+# Repelón Risk Lens
+**Parcel-level agroclimatic risk and rotation scenarios for Repelón (Atlántico, Colombia)**
+NASA Space Apps Challenge 2026 · *Field Shift: Adapting Farms with NASA Data*
+
+## What it is
+A transparent, rule-based (no machine learning) decision-support tool that ranks **1,848 unique rural parcels** by agroclimatic risk, using NASA GPM IMERG rainfall and Sentinel-2 vegetation indices. It also lays out **three crop-rotation scenarios** (current practice + two alternatives) with declared assumptions, evidence, information gaps and risks that need local review.
+
+**What it is not:** it does not forecast, does not know which crop is planted on each parcel, does not name a "best" rotation, and does not replace farmers or local technicians.
+
+## Method (all thresholds and weights are uncalibrated assumptions)
+- **Vulnerability** V = 0.4·stress(NDVI) + 0.4·stress(NDMI) + 0.2·stress(SAVI), from Sentinel-2 (ESA), stress = clip((healthy − x)/(healthy − critical), 0, 1).
+- **Hazard** A = clip(1 − rain / normal, 0, 1): 60-day rainfall (NASA GPM IMERG V07) against the same window in the previous 10 years.
+- **Risk** R = 0.5·A + 0.5·V. Classes: Moderate > 0.25, High > 0.50, Critical > 0.75, otherwise Low.
+
+## Results (run of 2026-11-15, 1,848 unique parcels)
+| | Result |
+|---|---|
+| Low / Moderate / High | 1,074 / 736 / 38 |
+| Mean vulnerability inside / outside the irrigation district | 0.29 / 0.47 (pasture-only parcels: 0.26 / 0.43) |
+| Rainfall in the window | 96 % of the 10-year normal |
+| Ranking robustness (1,000 random ±20 % changes of thresholds and weights) | Spearman ≥ 0.996 for vulnerability; **High class count ranges 0–441** |
+| Independent recalculation of all parcels | max difference 0.0001 |
+| GPM IMERG vs ERA5-Land monthly rainfall (2021–2025) | correlation 0.88; GPM ≈ 14 % lower |
+
+**Read this first (what we can and cannot claim)**
+- The **ranking** is stable; the **High label is not**, and it is mostly an artifact: 36 of the 38 High parcels are dominated by bare-soil cover (ESA WorldCover 2021) and 36 are tiny lots (< 0.1 ha, flagged `baja_confianza`); 37 of 38 are non-agricultural. We do **not** interpret them as crops under stress.
+- The irrigation-district contrast is an **association, not causation**; "outside the district" does not mean rainfed.
+- The model cannot distinguish crops from woodland, pasture or bare soil; high NDVI does not mean a healthy crop.
+- ESA WorldCover marks only 359 ha as cropland, versus 6,146–7,967 ha planted according to UPRA EVA (2025–2024): the cover map likely underestimates cropland, or our parcels cover only part of the municipality (24,108 ha of 35,172 ha).
+- No field validation. No parcel-level crop data.
+
+## Rotation scenarios
+See [`06_documentos/ROTATION_SCENARIOS_EN.md`](06_documentos/ROTATION_SCENARIOS_EN.md). Every statement is tagged **[OWN DATA]**, **[CITED]** or **[ASSUMPTION]**. Includes a what-if rainfall table (100 / 80 / 60 % of normal): High parcels go 0 → 420 → 597. This is *not* a forecast.
+
+## Alignment with the challenge brief
+| Brief element | Status |
+|---|---|
+| NASA Earth observations | **Covered, thin:** GPM IMERG V07 only (~11 km, so hazard varies little between parcels; Sentinel-2 drives the ranking) |
+| Local soil information | **Partial:** ISRIC SoilGrids clay 0–5 cm, global 250 m (not local), context only, not in the risk score; 1,180 of 1,848 unique parcels have a value (tiny parcels return none) |
+| Crop characteristics | **Partial:** qualitative, from cited sources (UPRA EVA, AGROSAVIA); no crop parameters |
+| Farmer priorities | **Not implemented.** Planned: adjustable priority weights on the scenario comparison |
+| Explore rotation strategies | **Partial:** 3 scenarios with assumptions; a calendar-overlap reading; no simulation |
+| Adapt to changing conditions | **Covered at screening level:** rainfall what-if scenarios |
+| Make uncertainty visible | **Covered:** sensitivity test, limitations, labelled assumptions |
+
+## Data sources
+- **NASA:** GPM IMERG V07 (rainfall).
+- **Other agencies/providers (not NASA):** Sentinel-2 and ESA WorldCover 2021 (ESA/Copernicus); ERA5-Land (ECMWF), rainfall cross-check only; ISRIC SoilGrids (soil clay, context only); GOES-19 imagery (NOAA), visual context only, not in the model; UPRA EVA 2019–2025 (planted area); irrigation district registry (ADR) and polygon (UPRA, ANT); Repelón cadastre.
+
+## Repository map
+- `02_cuaderno/` Colab notebook (Earth Engine) that produces the results.
+- `03_salidas_finales/` final parcel table (`predios_para_demo_2026-11-15.csv`), monthly calendar, example-parcel NDVI curve.
+- `complementary_analysis.py` → `tables/` (sensitivity, rain what-if, EVA by crop); `figures/` (risk map, district contrast, monthly calendar, rainfall scenarios).
+- `01_entradas/` inputs (district tables, EVA); `04_historico/` earlier runs; `05_evidencia/` visual checks; `06_documentos/` limitations, scenarios and logbook.
+- Parcel codes have 30 digits: open the CSVs as text or with Python (Excel corrupts them).
+
+## Reproduce
+Run the notebook in Google Colab with an Earth Engine project, then run `python complementary_analysis.py` from the repository root.
+
+## Use of AI
+AI assistants wrote the code and drafted the documentation. The author (not a programmer) defined the question and method and verified the output with an independent recalculation of all parcels, visual checks of sample parcels in satellite imagery, a rainfall cross-check with ERA5-Land and a sensitivity test.
+
+## Next steps
+1. Calibrate with crop and cycle data per parcel and local technicians (UMATA), and connect each parcel's risk to each rotation scenario.
+2. Add farmer-priority weights and local soil data (IGAC); compare rainfall with IDEAM stations.
+3. Evaluate further NASA layers (SMAP, MODIS, POWER). None of them is used in this version.

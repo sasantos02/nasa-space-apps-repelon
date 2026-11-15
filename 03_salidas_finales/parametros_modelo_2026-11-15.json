@@ -1,0 +1,70 @@
+{
+  "fecha_fin_analisis": "2026-11-15",
+  "ventana_dias": 60,
+  "ventana_gpm": [
+    "2026-09-15",
+    "2026-11-14"
+  ],
+  "nubosidad_max_pct": 30,
+  "escala_s2_m": 10,
+  "anios_para_lluvia_normal": 10,
+  "lluvia_normal_mm": 388.01,
+  "pesos_V": {
+    "NDVI": 0.4,
+    "NDMI": 0.4,
+    "SAVI": 0.2
+  },
+  "umbrales_indices": {
+    "NDVI": [
+      0.2,
+      0.7
+    ],
+    "NDMI": [
+      -0.1,
+      0.3
+    ],
+    "SAVI": [
+      0.05,
+      0.5
+    ]
+  },
+  "peso_amenaza": 0.5,
+  "cortes_nivel_riesgo": {
+    "Critico": 0.75,
+    "Alto": 0.5,
+    "Moderado": 0.25
+  },
+  "conjuntos_de_datos": {
+    "sentinel2": "COPERNICUS/S2_SR_HARMONIZED",
+    "lluvia": "NASA/GPM_L3/IMERG_V07",
+    "suelo": "ISRIC SoilGrids clay_mean 0-5 cm (global, 250 m; no es dato NASA). Capa de contexto: NO entra al riesgo. En el CSV soil_clay_pct esta en % (g/kg dividido entre 10 al empaquetar)."
+  },
+  "distrito_de_riego": {
+    "registro": "Registro de distritos de riego activos (ADR), archivo descargado el 14-11-2026: ASUREP, 3.613 ha, 416 familias",
+    "poligono": "Servicio de Distritos de Adecuación de Tierras (UPRA y ANT), cruzado con los predios en QGIS",
+    "regla_de_asignacion": "predios que intersecan el polígono (por verificar: puede incluir predios que solo tocan el borde)",
+    "predios_dentro": 472,
+    "punto_referencia_adr": {
+      "lat": 10.49672,
+      "lon": -75.13267
+    }
+  },
+  "n_predios": 1857,
+  "predios_por_nivel": {
+    "Bajo": 1083,
+    "Moderado": 736,
+    "Alto": 38
+  },
+  "advertencia": "Umbrales y pesos son supuestos iniciales sin calibrar; resultados sin validar.",
+  "n_predios_unicos": 1848,
+  "predios_por_nivel_unicos": {
+    "Bajo": 1074,
+    "Moderado": 736,
+    "Alto": 38
+  },
+  "nota_filas": "n_predios y predios_por_nivel cuentan filas (9 CODIGO repetidos); usar los campos *_unicos.",
+  "suelo_cobertura": {
+    "predios_unicos_con_dato": 1180,
+    "de": 1848
+  }
+}
