@@ -5,14 +5,18 @@ body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(
 h1{font-size:1.35rem;margin:.2em 0}h2{font-size:1.05rem;margin:0 0 .5em;color:var(--ac)}.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:12px 0}
 .mut{color:var(--mut);font-size:.85rem}.warn{border-left:4px solid #d98e04;padding:6px 10px;background:rgba(217,142,4,.12);margin:8px 0}
 table{border-collapse:collapse;width:100%}td,th{padding:3px 4px;text-align:left;font-size:.85rem}.sc{overflow-x:auto}select,input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:3px}
-.bar{height:14px;background:var(--ac);border-radius:4px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}label{display:block;margin:6px 0}input[type=range]{width:min(320px,70%)}</style></head><body><main>
+.bar{height:14px;background:var(--ac);border-radius:4px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}label{display:block;margin:6px 0}input[type=range]{width:min(320px,70%)}</style></head><body><main>
 <h1>Repelón Risk Lens – rotation scenario explorer</h1>
 <p class="mut">Screening tool for NASA Space Apps 2026 (Field Shift). Rule-based, no machine learning, <b>not a forecast</b> and not a recommendation. Rainfall: NASA GPM IMERG V07; vegetation: Sentinel-2 (ESA). Thresholds, weights and every scenario setting below are <b>uncalibrated assumptions</b> to be reviewed locally.</p>
-<div class="card"><h2>1. Parcel</h2><div class="row"><input id="code" list="dl" size="34" aria-label="parcel code"><label style="margin:0"><input type="checkbox" id="all"> all 1,848 parcels (default: 386 agricultural)</label></div><datalist id="dl"></datalist><div id="pinfo"></div></div>
+<div class="card"><h2>1. Map: click a parcel</h2><p class="mut"><b>How to use:</b> ① click a parcel on the map (or type its code) → ② move the rainfall bar → ③ edit the monthly calendars → ④ set the farmer’s priorities.</p>
+<div class="grid"><div><div class="row"><select id="mm"><option value="r">Colour: risk level</option><option value="v">Colour: vulnerability</option></select><select id="mf"><option value="">All parcels</option><option value="a">Agricultural only (386)</option></select></div>
+<canvas id="map" style="width:100%;display:block;border:1px solid var(--bd);border-radius:8px;margin-top:6px;cursor:pointer"></canvas>
+<div class="mut" id="leg">Low <span style="color:#4daf4a">●</span> Moderate <span style="color:#ffb000">●</span> High <span style="color:#d73027">●</span> · dot size ~ area · black ring = selected. Most High dots are tiny bare-soil lots, not crops.</div></div>
+<div id="gw"><b>Cloud cover now (GOES-19 IR, Caribbean)</b><img id="gl" alt="GOES-19 Caribbean infrared" style="width:100%;border-radius:8px;margin-top:6px"><div class="mut" id="gt"></div><div class="mut">Near-real-time image published by NOAA/NESDIS STAR; refreshes every 10 min while this page is open. Visual context only: not used in the model, no forecasting.</div><img id="gg" src="goes_nubosidad_12oct.gif" alt="GOES-19 sequence 12 Oct 2026" style="width:100%;border-radius:8px;margin-top:6px" onerror="this.style.display='none'"></div></div>
+<div class="row" style="margin-top:8px"><input id="code" list="dl" size="34" aria-label="parcel code"><label style="margin:0"><input type="checkbox" id="all"> list all 1,848 codes (default: 386 agricultural)</label></div><datalist id="dl"></datalist><div id="pinfo"></div></div>
 <div class="card"><h2>2. Rainfall what-if (not a forecast)</h2><label>Rain = <b id="kv"></b>% of the 10-year normal <input type="range" id="k" min="40" max="120" value="100"></label><div id="risk"></div><p class="mut">Vulnerability stays fixed; hazard = 1 − rain/normal; risk = 0.5·hazard + 0.5·vulnerability. The same factor scales the monthly rain below (assumption). A month is “dry” if scaled rain &lt; 50 mm (assumption).</p></div>
 <div class="card"><h2>3. Scenario calendars (editable assumptions)</h2><div class="sc"><table id="cal"></table></div><div class="mut">Source for sowing at the start of the rains: Contexto Ganadero; reserve forage example: AGROSAVIA (see repository). Crop windows are assumptions. Monthly rain: GPM IMERG 2021–2025 mean.</div><div id="met" class="sc"></div></div>
 <div class="card"><h2>4. Farmer priorities → scenario reading</h2><div id="pri"></div><div id="rank"></div><p class="mut">Scores are simple shares computed from the calendars (e.g., water-needing months that are not dry). Plans without a crop score 0 on “sowing with rains”. This is a transparent reading of assumptions, not a yield or income model; soil health is reduced to months with cover.</p></div>
-<div class="card"><h2>5. Context: GOES-19 cloud sequence, 12 Oct 2026</h2><img id="goes" src="goes_nubosidad_12oct.gif" alt="GOES-19 cloud sequence" style="max-width:100%" onerror="this.parentNode.style.display='none'"><p class="mut">Visual context only (NOAA GOES-19). Not used in the model; no forecasting.</p></div>
 <p class="mut">Limits: no parcel-level crop data; High class mostly tiny bare-soil lots (not crops); ranking is robust to ±20 % changes, class counts are not; farmer-priority weights are adjustable assumptions. Full text in the repository (README, LIMITACIONES.md, ROTATION_SCENARIOS_EN.md).</p></main>
 <script src="data.js"></script><script>
 const $=i=>document.getElementById(i),MO='Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),TY=['Pasture','Pasture+reserve','Crop','Cover','Fallow'];
@@ -25,7 +29,7 @@ pl.forEach((t,i)=>{if(dry[i]){dm++;if(t==1)dr++}if(t<=2){w++;if(dry[i])wd++}if(t
 return{w,wd,dm,dr,c,cd,f,s:[w?1-wd/w:1,dm?dr/dm:1,1-f/12,c?1-cd/c:0]}}
 function plans(){return Object.keys(PL).map(n=>PL[n])}
 function show(){const p=PARCELS.find(x=>x[0]===$('code').value.trim());if(!p){$('pinfo').innerHTML='<p class="mut">Pick a parcel code from the list.</p>';return}
-if(cur!==p[0]){cur=p[0];$('k').value=Math.min(120,Math.max(40,Math.round(p[5])))}
+if(cur!==p[0]){cur=p[0];sel=p[0];$('k').value=Math.min(120,Math.max(40,Math.round(p[5])));draw()}
 const k=$('k').value/100;$('kv').textContent=$('k').value;const A=Math.max(0,1-k),R=.5*A+.5*p[4];
 $('pinfo').innerHTML=`<table><tr><td>Area</td><td>${p[1]} ha</td><td>Cover (WorldCover 2021)</td><td>${p[3]}</td></tr><tr><td>Irrigation district</td><td>${p[2]?'inside':'outside (not necessarily rainfed)'}</td><td>Clay (SoilGrids, context)</td><td>${p[8]==null?'no data':p[8]+' %'}</td></tr><tr><td>Vulnerability</td><td>${p[4]}</td><td>Run result (rain ${p[5]}% of normal)</td><td>${p[6]} (${p[7]})</td></tr></table>`+((p[9]||!p[10])?'<div class="warn">Low-confidence or non-agricultural parcel: do not read the result as crop stress.</div>':'');
 $('risk').innerHTML=`<b>Risk at ${$('k').value}% of normal: ${R.toFixed(3)} – ${lvl(R)}</b> (hazard ${A.toFixed(2)})`;
@@ -37,8 +41,24 @@ const W=[...document.querySelectorAll('#pri input')].map(i=>+i.value);if(!W.leng
 const sc=(m,w)=>{const t=w.reduce((a,b)=>a+b,0);return t?m.s.reduce((a,v,i)=>a+v*w[i],0)/t:0};
 const top=w=>res.map(r=>({n:r.n,v:sc(r.m,w)})).sort((a,b)=>b.v-a.v);const rk=top(W),cnt={A:0,B:0,C:0};
 for(let i=0;i<300;i++)cnt[top(PN.map(()=>Math.random()))[0].n]++;
-$('rank').innerHTML=rk.map(r=>`<div class="row"><span style="width:200px">${NM[r.n]}</span><div class="bar" style="width:${Math.round(r.v*260)}px"></div><b>${r.v.toFixed(2)}</b></div>`).join('')+`<p class="mut">Top scenario under 300 random priority settings: A ${Math.round(cnt.A/3)}% · B ${Math.round(cnt.B/3)}% · C ${Math.round(cnt.C/3)}%. If no scenario dominates, the choice depends on the farmer’s priorities and on local review; there is no single winner.</p>`}
+const mx=Math.max(cnt.A,cnt.B,cnt.C),dom=mx>=210;
+$('rank').innerHTML=rk.map(r=>`<div class="row"><span style="width:200px">${NM[r.n]}</span><div class="bar" style="width:${Math.round(r.v*260)}px"></div><b>${r.v.toFixed(2)}</b></div>`).join('')+`<p class="mut">Top scenario under 300 random priority settings: A ${Math.round(cnt.A/3)}% · B ${Math.round(cnt.B/3)}% · C ${Math.round(cnt.C/3)}%. ${dom?'One scenario leads under most priority settings, but only because of how the calendars above are defined (e.g., B combines reserve feed and a crop window). That reflects our assumptions, not field evidence: edit the calendars and see it change.':'No scenario dominates: the choice depends on the farmer’s priorities and on local review; there is no single winner.'}</p>`}
 $('pri').innerHTML=PN.map((n,i)=>`<label>${n}: <input type="range" min="0" max="5" value="3"></label>`).join('');
 document.querySelectorAll('#pri input').forEach(i=>i.oninput=score);
-$('code').value='086060003000000010286000000000';$('code').oninput=show;$('k').oninput=show;$('all').onchange=fill;fill();show();
+$('code').value='086060003000000010286000000000';$('code').oninput=show;$('k').oninput=show;$('all').onchange=fill;
+const CL={Low:'#4daf4a',Moderate:'#ffb000',High:'#d73027',Critical:'#7f0000'},RK={Low:0,Moderate:1,High:2,Critical:3};let mv=[],sel=null;
+const cv=$('map'),cx=cv.getContext('2d'),LA=PARCELS.map(p=>p[11]),LO=PARCELS.map(p=>p[12]),B={x0:Math.min(...LO),y0:Math.min(...LA),y1:Math.max(...LA),x1:Math.max(...LO)},C0=Math.cos(10.5*Math.PI/180);
+const vcol=v=>`rgb(${77+138*v|0},${175-127*v|0},${74-35*v|0})`;
+function draw(){const dp=devicePixelRatio||1,W=cv.clientWidth;if(!W)return;const wd=(B.x1-B.x0)*C0,H=Math.round(W*(B.y1-B.y0)/wd),m=10,s=(W-2*m)/wd;cv.style.height=H+'px';cv.width=W*dp;cv.height=H*dp;cx.setTransform(dp,0,0,dp,0,0);mv=[];
+const md=$('mm').value,oa=$('mf').value=='a';
+PARCELS.filter(p=>!oa||p[10]).sort((a,b)=>(a[10]-b[10])||(RK[a[7]]-RK[b[7]])).forEach(p=>{const x=m+(p[12]-B.x0)*C0*s,y=H-m-(p[11]-B.y0)*s,r=Math.min(9,2+Math.sqrt(p[1])*.6);cx.globalAlpha=p[10]?.95:.55;cx.fillStyle=md=='r'?CL[p[7]]:vcol(p[4]);cx.beginPath();cx.arc(x,y,r,0,7);cx.fill();mv.push([x,y,r,p[0]])});
+const q=mv.find(v=>v[3]==sel);if(q){cx.globalAlpha=1;cx.lineWidth=2.5;cx.strokeStyle='#fff';cx.beginPath();cx.arc(q[0],q[1],q[2]+4,0,7);cx.stroke();cx.lineWidth=1.5;cx.strokeStyle='#000';cx.beginPath();cx.arc(q[0],q[1],q[2]+4,0,7);cx.stroke()}
+$('leg').innerHTML=(md=='r'?'Low <span style="color:#4daf4a">●</span> Moderate <span style="color:#ffb000">●</span> High <span style="color:#d73027">●</span>':'Vulnerability: low <span style="color:#4daf4a">●</span> → high <span style="color:#d73027">●</span>')+' · dot size ~ area · black ring = selected. Most High dots are tiny bare-soil lots, not crops.'}
+cv.onclick=e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let bs=null,bd=1e9;mv.forEach(v=>{const d=Math.hypot(v[0]-x,v[1]-y)-v[2];if(d<=bd){bd=d;bs=v}});if(bs&&bd<12){$('code').value=bs[3];show()}};
+$('mm').onchange=$('mf').onchange=draw;addEventListener('resize',draw);
+const G='https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/car/13/1000x1000.jpg';
+function live(){$('gl').src=G+'?t='+Date.now();$('gt').textContent='Fetched by your browser at '+new Date().toLocaleTimeString()}
+$('gl').onload=()=>{$('gw').querySelector('b').style.display=''};$('gl').onerror=()=>{$('gl').style.display='none';$('gt').textContent='Live image unavailable right now (NOAA server).'};$('gl').onload=()=>{$('gl').style.display=''};
+live();setInterval(live,600000);
+fill();show();
 </script></body></html>
