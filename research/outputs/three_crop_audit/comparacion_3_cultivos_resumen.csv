@@ -1,0 +1,10 @@
+cultivo,mes_siembra,deficit_medio_mm_dia,fraccion_dias_deficit,deficit_menos_lluvia,deficit_mas_lluvia,ciclos
+Maiz,4,1.922,0.675,2.074,1.801,8
+Maiz,5,1.738,0.578,1.897,1.616,8
+Maiz,6,1.665,0.572,1.838,1.526,8
+Sorgo,4,1.593,0.65,1.719,1.49,8
+Sorgo,5,1.402,0.551,1.532,1.302,8
+Sorgo,6,1.328,0.536,1.475,1.216,8
+Yuca,4,1.109,0.549,1.221,1.02,8
+Yuca,5,0.979,0.5,1.089,0.894,8
+Yuca,6,1.038,0.554,1.145,0.955,8

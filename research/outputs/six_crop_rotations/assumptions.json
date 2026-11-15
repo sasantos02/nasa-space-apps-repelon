@@ -1,0 +1,14 @@
+{
+  "sources": {
+    "Kc": "https://www.fao.org/4/s2022e/s2022e07.htm",
+    "rice": "https://www.fao.org/4/s2022e/s2022e08.htm"
+  },
+  "limitations": [
+    "No measured crop yields or field rotation validation",
+    "Generic crop stages and Kc are not locally calibrated",
+    "NASA POWER is regional point data, not parcel irrigation",
+    "Daily rainfall deficit ignores soil-water carryover",
+    "Flooded rice requires additional water; rice proxy is separate",
+    "Gaps are unmodeled, not quantified cover crop benefits"
+  ]
+}

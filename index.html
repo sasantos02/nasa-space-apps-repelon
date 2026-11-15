@@ -1,15 +1,16 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Repelón Risk Lens – rotation scenario explorer</title>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Repelón Risk Lens — Farm decision explorer</title>
 <style>
 :root{--bg:#f6f4ee;--fg:#1d2733;--mut:#54636f;--card:#ffffff;--ac:#1f6f8b;--bd:#d8d2c4;--warn:#b24a00;--map:#d9dee3}
 @media(prefers-color-scheme:dark){:root{--bg:#10171e;--fg:#e6edf3;--mut:#9fb0c0;--card:#18222c;--ac:#5fb4d1;--bd:#2f3d4a;--warn:#f0a050;--map:#27323d}}
 *{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--fg)}
-main{max-width:1180px;margin:auto;padding:14px}
+main{max-width:1500px;margin:auto;padding:20px clamp(14px,2.5vw,38px)}
 h1{font-size:1.5rem;margin:.1em 0}h2{font-size:1.08rem;margin:0 0 .5em;color:var(--ac)}h3{font-size:1rem;margin:.2em 0}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin:12px 0}
 .mut{color:var(--mut);font-size:.88rem}.warn{border-left:4px solid var(--warn);padding:6px 10px;background:rgba(217,142,4,.12);margin:8px 0;border-radius:4px;font-size:.92rem}
 .steps{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.steps span{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:4px 12px;font-size:.9rem}.steps b{color:var(--ac)}
-.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:14px;align-items:start}
+.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(350px,1fr);gap:14px;align-items:start}
 @media(max-width:900px){.layout{grid-template-columns:1fr}}
 .side{position:sticky;top:8px}@media(max-width:900px){.side{position:static}}
 .mapbox{position:relative;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:var(--map);height:min(66vh,640px);min-height:360px;touch-action:none}
@@ -32,86 +33,281 @@ table{border-collapse:collapse;width:100%}td,th{padding:4px 5px;text-align:left;
 .t0{background:#c5e1a5}.t1{background:#7cb342}.t2{background:#ffd54f}.t3{background:#81d4fa}.t4{background:#e0e0e0}
 .dryh{border-bottom:3px solid #e65100}.cal .mut{font-size:.75rem}
 .bar{height:16px;background:var(--ac);border-radius:4px}
-.rk{display:grid;grid-template-columns:minmax(150px,230px) 1fr 48px;gap:8px;align-items:center;margin:4px 0}
+.crop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.crop-card{border:1px solid var(--bd);border-radius:10px;padding:12px;min-width:0}.crop-card strong{display:block;font-size:1.05rem}.crop-card .big{font-size:1.6rem}.crop-card .mut{font-size:.8rem}.crop-card .tag{display:inline-block;border-radius:6px;padding:2px 7px;background:rgba(95,180,209,.14);font-size:.75rem}.crop-card.best{border-color:var(--ac)}@media(max-width:650px){.crop-grid{grid-template-columns:1fr}}.rk{display:grid;grid-template-columns:minmax(150px,230px) 1fr 48px;gap:8px;align-items:center;margin:4px 0}
 .rk .trk{background:rgba(120,140,160,.2);border-radius:4px;height:16px}
 details{margin:6px 0}summary{cursor:pointer;color:var(--ac);font-weight:600}
 .lg span{display:inline-block;padding:1px 8px;border-radius:5px;margin:2px 4px 2px 0;font-size:.8rem;color:#1d2733}
 label{display:block;margin:6px 0}
+ .insight{padding:14px;border:1px solid var(--bd);background:linear-gradient(135deg,rgba(95,180,209,.10),transparent);border-radius:10px;margin-top:12px}.insight h3{margin:0 0 8px;color:var(--ac)}.insight p{margin:6px 0;font-size:.91rem}.mini-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.mini-flow div{border:1px solid var(--bd);border-radius:8px;padding:9px;font-size:.83rem}.mini-flow b{display:block;color:var(--ac)}@media(max-width:700px){.mini-flow{grid-template-columns:repeat(2,1fr)}}.section-sub{font-size:.87rem;color:var(--mut);margin:0 0 12px} .side{position:static} 
+/* REDISEÑO VISUAL — mantiene intactos los IDs y la lógica de datos */
+:root{--bg:#0b1317;--fg:#eef6f3;--mut:#9eb4b4;--card:#152229;--ac:#71dbc0;--bd:#294047;--warn:#f4b76e;--map:#1d3037}
+@media(prefers-color-scheme:light){:root{--bg:#0b1317;--fg:#eef6f3;--mut:#9eb4b4;--card:#152229;--ac:#71dbc0;--bd:#294047;--warn:#f4b76e;--map:#1d3037}}
+html{scroll-behavior:smooth}body{font-family:Inter,'Segoe UI',system-ui,sans-serif;background:radial-gradient(ellipse at 80% 0%,#173a37 0%,transparent 35%),var(--bg);font-size:15px;line-height:1.55}
+main{max-width:1480px;padding:30px clamp(20px,4vw,70px) 70px}
+.hero{padding:34px 0 28px;max-width:850px}.hero-kicker,.eyebrow{color:var(--ac);font-weight:800;letter-spacing:.16em;font-size:.7rem;text-transform:uppercase}.hero-kicker{display:flex;align-items:center;gap:11px}.hero-sep{color:#536e71}.live-dot{width:8px;height:8px;border-radius:50%;background:#78dfb3;box-shadow:0 0 15px #78dfb3}
+h1{font-size:clamp(2.3rem,4.6vw,4.5rem);line-height:1.06;letter-spacing:-.055em;margin:20px 0 16px;font-weight:790}.hero-period{color:#77dfb7}.hero>p{color:#b8cac8;font-size:1.13rem;max-width:690px;margin:0}.hero-stats{display:flex;gap:30px;flex-wrap:wrap;margin-top:25px;color:#a6c1bb;font-size:.85rem}.hero-stats b{font-size:1.1rem;color:#f4faf7;margin-right:4px}
+.journey{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}.journey a{padding:11px 18px;text-decoration:none;color:#cde0d9;background:#15242a;border:1px solid #2b4349;border-radius:999px;font-weight:650;font-size:.85rem}.journey b{color:#79e2c5;margin-right:8px}.journey a:hover{border-color:#79e2c5;background:#21383c}
+.layout{grid-template-columns:minmax(0,1.7fr) minmax(330px,.9fr);gap:18px}.card{border:1px solid #2b4449;border-radius:18px;padding:23px;margin:16px 0;box-shadow:0 10px 30px rgba(0,0,0,.08)}.layout>.card{margin:0}.side>.card{margin:0 0 16px}.eyebrow{margin-bottom:7px}h2{color:#f3faf6;font-size:clamp(1.2rem,2vw,1.65rem);line-height:1.23;letter-spacing:-.025em;margin:0 0 10px}h3{color:#e7f7f0}.lead{color:#a8bfbc;font-size:.95rem;margin:0 0 17px}.mut{color:#9eb6b4;font-size:.83rem}.mapbox{height:min(67vh,680px);min-height:440px;border-radius:13px;border-color:#39575c}.layout>.card>.row{margin:12px 0 16px;gap:9px}.row.sp{gap:8px}
+select,input[type=text],.pill{background:#20343a;border:1px solid #3b555b;color:#f0f7f4;border-radius:10px;min-height:39px;padding:7px 11px;font-size:.87rem}select{max-width:100%}input[type=text]{max-width:100%}.pill:hover{border-color:#7bdcc5}.pill.on{background:#3caa94;color:#09211d}.ctl button{background:#183037}.leg{background:rgba(14,30,33,.92);color:#e6f4ee;backdrop-filter:blur(12px);border-color:#47615d;padding:10px 12px;max-width:78%}.leg .mut{color:#b7d0c9}.insight{background:linear-gradient(135deg,#1a3a37,#192c32);border:1px solid #3b6860;border-radius:13px;padding:16px}.insight h3{color:#8ce6c7;font-size:1rem}.insight p{line-height:1.6}.badge{font-size:.82rem;padding:4px 10px}.big{font-size:2.2rem;letter-spacing:-.04em}.side #risk{margin-top:16px;padding:15px;border-radius:12px;background:#102328}.side #risk .mut{display:block;margin-top:6px}.side input[type=range]{accent-color:#6bd5b8;cursor:pointer}.side .card>p.mut{margin-bottom:0}.side #pinfo table{margin-top:9px}.side #pinfo td{font-size:.8rem;padding:5px 3px}
+.crops-section{margin-top:22px;padding:28px}.crops-section>.row{gap:15px;margin:18px 0}.crops-section label{font-weight:650;font-size:.85rem}.crops-section select{display:block;margin-top:7px;min-width:180px}.crop-grid{gap:15px;margin:22px 0}.crop-card{position:relative;min-height:265px;padding:22px;border-radius:16px;background:#112027;border:1px solid #344c52;display:flex;flex-direction:column;align-items:flex-start;gap:6px;transition:transform .2s,border-color .2s}.crop-card:hover{transform:translateY(-3px);border-color:#78c7b6}.crop-card.best{background:linear-gradient(145deg,#1c413a,#16302f);border:1.5px solid #7be0bd;box-shadow:0 0 0 1px #24584e}.crop-icon{font-size:2.2rem;line-height:1.3;margin-bottom:7px}.crop-card strong{font-size:1.3rem;color:#f1fbf5}.crop-card .mut{font-size:.82rem}.crop-number{font-size:2rem;letter-spacing:-.05em;font-weight:800;color:#f5faf8;margin-top:7px}.crop-number small{font-size:.85rem;font-weight:500;color:#9fbbb3;letter-spacing:0}.crop-meter{height:7px;background:#2d474b;width:100%;border-radius:99px;overflow:hidden;margin:7px 0}.crop-meter span{display:block;height:100%;background:#79d7b9;border-radius:99px}.crop-card .tag{background:#75ddbd;color:#10332b;font-size:.73rem;font-weight:800;border-radius:100px;padding:6px 10px;margin-top:auto}.crop-card p{margin:3px 0 12px}.crops-section #cropExplain{border-left:3px solid #74d4ba;padding:4px 14px;background:#162a2b;border-radius:0 8px 8px 0}.crops-section details{margin-top:20px}.warn{background:#352b23;border-left:3px solid #e9ad67;color:#efd9c0;padding:12px 15px;border-radius:8px}
+#metodo{margin-top:50px}.method-heading{font-size:1.9rem}.mini-flow{gap:12px}.mini-flow div{background:#152a2e;padding:18px;border-radius:12px;line-height:1.6}.mini-flow b{font-size:1rem;margin-bottom:6px}details.card{padding:18px 23px}details summary{color:#a3ead3;font-size:1rem}#priorityExplain{background:#142b2c;border-radius:10px;padding:15px;line-height:1.7}a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #a2e9d2;outline-offset:2px}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.mapbox{height:55vh}.side{display:grid;grid-template-columns:1fr 1fr;gap:14px}.side>.card{margin:0}}
+@media(max-width:720px){main{padding:14px 14px 55px}.hero{padding:22px 0}.hero-stats{gap:12px}.journey a{font-size:.78rem;padding:9px 12px}.side{grid-template-columns:1fr}.card,.crops-section{padding:16px}.crop-grid{grid-template-columns:1fr}.crop-card{min-height:0}.mapbox{min-height:340px;height:55vh}.hero>p{font-size:1rem}}
+
+/* DASHBOARD v2: aprovecha el ancho completo sin modificar el motor del mapa */
+main{max-width:none;width:100%;padding:0 24px 56px}
+.hero{max-width:none;padding:22px 0 15px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:20px}
+.hero h1{font-size:clamp(1.85rem,2.65vw,3.15rem);margin:8px 0}.hero>p{font-size:.95rem;max-width:750px}.hero-stats{margin:0;display:grid;gap:6px 20px;grid-template-columns:repeat(3,auto);white-space:nowrap}.hero-stats span{display:flex;flex-direction:column}.hero-stats b{font-size:1.3rem}
+.journey{margin:0 0 14px}.journey a{padding:8px 14px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,390px);gap:14px;align-items:stretch}
+.layout>section.card{display:flex;flex-direction:column;min-width:0}.layout>section.card>.mapbox{flex:1;height:calc(100vh - 245px);min-height:540px;max-height:900px}
+.layout>.side{display:flex;flex-direction:column;gap:12px;min-width:0}.side>.card{margin:0;padding:17px 19px}.side h2{font-size:1.28rem;margin:3px 0 8px}
+.layout .card{box-shadow:none}.layout>section.card{padding:14px 16px}.layout>section.card>.lead{margin:0 0 10px}.layout>section.card>.eyebrow{font-size:.63rem}
+.side #pinfo{font-size:.88rem}.side #pinfo table{font-size:.83rem}.side #pinfo td{padding:7px 4px;border-bottom:1px solid #2b4449}.side #pinfo .mut{font-size:.83rem}
+.side .insight{padding:11px 13px;margin-top:10px}.side .insight p{margin:5px 0;font-size:.85rem}
+.side .row.sp{gap:6px}.side .pill{font-size:.78rem;padding:6px 9px}.side #code{width:100%;min-width:0}
+.side .lead{font-size:.85rem;margin:0 0 10px}.side #risk .big{font-size:1.8rem}
+#cultivos,#metodo{scroll-margin-top:20px}#cultivos{margin-top:14px}.crop-card{min-height:210px}
+.method-diagram{margin:14px 0 18px;border:1px solid #2b4449;border-radius:18px;padding:20px;background:linear-gradient(135deg,#12292c,#101b22)}
+.method-diagram svg{width:100%;height:auto;display:block}.method-diagram .node{fill:#193238;stroke:#4e8e8b;stroke-width:1.4}.method-diagram .node2{fill:#1d313e;stroke:#5a8295;stroke-width:1.4}.method-diagram .arrow{stroke:#7bdec5;stroke-width:2.3;fill:none;marker-end:url(#arrowhead)}.method-diagram text{fill:#e6f7f2;font-family:system-ui,sans-serif}.method-diagram .sub{fill:#aec6c5;font-size:13px}.method-diagram .head{font-size:18px;font-weight:700}.method-diagram .branch{fill:#7bdec5;font-size:13px;font-weight:700}
+@media(max-width:1050px){.hero{grid-template-columns:1fr}.hero-stats{justify-content:start}.layout{grid-template-columns:minmax(0,1fr) 340px}.layout>section.card>.mapbox{min-height:510px}}
+@media(max-width:760px){main{padding:0 12px 36px}.layout{grid-template-columns:1fr}.layout>section.card>.mapbox{height:60vh;min-height:360px}.hero-stats{grid-template-columns:repeat(3,minmax(0,1fr));white-space:normal}.side{display:block}.side>.card{margin:10px 0}.method-diagram{overflow-x:auto}.method-diagram svg{min-width:690px}}
+
+/* Functional final pass */
+.priority-choices{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}.priority-btn{background:#1b3034;border:1px solid #3b5658;border-radius:12px;padding:13px 18px;color:#e7f8f2;font:inherit;font-weight:700;cursor:pointer}.priority-btn.selected{background:#225c51;border-color:#7ce2bd;box-shadow:inset 0 0 0 1px #7ce2bd}.priority-btn:hover{border-color:#7ce2bd}
+#priorityExplain{padding:22px 24px;background:#122a2a;border:1px solid #30534c}#priorityExplain h3{font-size:1.35rem;margin:8px 0}#priorityExplain p{font-size:1rem;max-width:960px;color:#c4d9d3;margin:6px 0}
+.evidence-pill{display:inline-block;border:1px solid #5aa895;color:#9ff0d0;padding:5px 10px;border-radius:999px;font-size:.72rem;letter-spacing:.07em;font-weight:800}.evidence-pill.qualitative{color:#f1d6a6;border-color:#a38a5c}
+.rotation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:20px 0}.rotation-card{padding:20px;background:#12242b;border:1px solid #375058;border-radius:16px}.rotation-title{display:flex;align-items:center;gap:10px;font-size:1.2rem;margin-bottom:16px}.rotation-letter{display:grid;place-items:center;width:36px;height:36px;background:#295c51;border-radius:10px;color:#a9f3d7;font-weight:900}.rotation-card label{font-size:.82rem;color:#b4cbc5;font-weight:650;margin:11px 0}.rotation-card select{display:block;width:100%;margin-top:5px;min-height:40px}.timeline-months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;margin:17px 0 8px}.timeline-months span{border-radius:4px;text-align:center;font-size:.7rem;padding:9px 0;background:#273b3f;color:#a9b9b9}.timeline-months span.crop{background:#6dcab1;color:#10342d;font-weight:800}.timeline-months span.cover{background:#8aaf65;color:#112916}.timeline-months span.fallow{background:#625d52;color:#ddd}.timeline-legend{display:flex;gap:10px;flex-wrap:wrap;color:#9eb6b4;font-size:.68rem}.rotation-metric{margin-top:14px;border-top:1px solid #344b4c;padding-top:13px}.rotation-metric b{font-size:1.4rem;color:#eaf9f2}.rotation-metric span{font-size:.8rem;color:#afc5c0}.rotation-summary{padding:18px 22px;border-radius:12px;background:#17322e;border:1px solid #397d69}.rotation-summary>b{display:block;margin:10px 0;font-size:1.15rem}.rotation-summary p{color:#bbd0ca;margin:0}.rotation-section details{margin-top:15px}
+@media(max-width:1000px){.rotation-grid{grid-template-columns:1fr}.priority-btn{flex:1}}
+
+/* Visual parcel summary — progressive disclosure without changing scientific calculations */
+.parcel-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 15px}.parcel-status .mut b{color:#e7f6f1;font-variant-numeric:tabular-nums}
+.parcel-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.metric-tile{min-width:0;display:flex;flex-direction:column;gap:3px;padding:13px 14px;border:1px solid #345157;border-radius:13px;background:linear-gradient(140deg,#193239,#14282e)}
+.metric-symbol{font-size:1.1rem;color:#8cddc7;line-height:1.2}.metric-name{font-size:.72rem;color:#aac6bf;letter-spacing:.01em}
+.metric-tile strong{font-size:1.22rem;line-height:1.25;letter-spacing:-.025em;color:#f0fbf5;overflow-wrap:anywhere}.metric-tile strong small{font-size:.74rem;font-weight:500;color:#acc9c0}
+.metric-sub{font-size:.69rem;color:#9bb6b1}.parcel-context{padding:10px 3px;color:#b9d2cb;font-size:.78rem;line-height:1.5}.context-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#71d9b9;margin-right:6px}.context-separator{color:#6d9690;margin:0 5px}
+.check-note{display:flex;gap:11px;margin-top:12px;padding:12px;border-radius:11px;background:#20302e;border:1px solid #3b514a}.check-note>span{font-size:1.1rem;color:#8fe1bb}.check-note div{display:flex;flex-direction:column;gap:3px}.check-note b{font-size:.81rem;color:#e5f7ed}.check-note div span{font-size:.77rem;color:#b5cbc4}
+.insight{margin-top:14px}.insight-head{display:flex;align-items:center;gap:11px;padding:3px 0 12px;border-bottom:1px solid #40635a}.insight-icon{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:#31594e;color:#a2f0cd;font-size:1.25rem}.insight-head div{display:flex;flex-direction:column;gap:2px}.insight-head strong{font-size:1rem;color:#f1fff8}.insight-head div span{font-size:.74rem;color:#a9cfc1}.insight-steps{display:grid;gap:12px;margin-top:14px}.insight-step{display:flex;gap:10px;align-items:flex-start}.step-symbol{width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:#28483f;color:#8ce0c0;flex:none;font-weight:700}.insight-step div{display:flex;flex-direction:column;gap:2px}.insight-step b{font-size:.8rem;color:#e8f8f0}.insight-step div span{font-size:.79rem;line-height:1.45;color:#b9d1c9}
+@media(max-width:470px){.parcel-metrics{grid-template-columns:1fr 1fr}.metric-tile{padding:10px}.metric-tile strong{font-size:1.05rem}}
+
+.six-crop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.six-crop-card{padding:18px;border-radius:15px;background:#142b2e;border:1px solid #365557;min-height:145px}.six-crop-card h3{font-size:1.08rem;margin:0 0 8px}.six-crop-card .six-number{font-size:1.9rem;font-weight:800;color:#a6f3d9}.six-crop-card small{color:#b6c9c5}.six-crop-card.best{border-color:#67dbb7;background:#173b35}.six-empty{padding:16px;border:1px dashed #55706b;border-radius:12px}.rotation-section .rotation-grid{margin-top:16px}@media(max-width:900px){.six-crop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.six-crop-grid{grid-template-columns:1fr}}
+
+/* Final narrative-first hierarchy */
+#rotation-evidence{border-color:#428a78;background:linear-gradient(140deg,#142e30,#102027 65%);box-shadow:0 10px 45px #0002}
+#rotation-evidence .rotation-card{position:relative;overflow:hidden;min-height:245px}
+#rotation-evidence .rotation-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:#61d8b4}
+#rotation-evidence .rotation-card:nth-child(2)::before{background:#e4b46d}
+#rotation-evidence .rotation-card:nth-child(3)::before{background:#83b7e5}
+#rotation-evidence .rotation-card strong{font-size:1.15rem}
+#rotation-evidence .rotation-card .mut{font-size:.83rem}
+#rotation-evidence .rotation-title{line-height:1.35;align-items:flex-start}
+#cultivos .six-crop-card.best{border-color:#67dbb7;background:linear-gradient(135deg,#193e37,#15312f)}
+#cultivos .six-crop-card.best::after{content:"LOWEST MODELED SHORTFALL THIS MONTH";display:block;font-size:.62rem;letter-spacing:.08em;color:#9aefcf;margin-top:9px;font-weight:800}
+#legacy-analysis>summary{font-size:.85rem;color:#a7c5c0}
+.evidence-map{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);gap:14px;align-items:stretch;padding:22px;border:1px solid #31585b;border-radius:22px;background:radial-gradient(ellipse at 50% 0%,#1a3b3b,#0e1c24 75%)}
+.evidence-path{border:1px solid #3c6467;border-radius:17px;background:#152a32;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.evidence-kicker{font-size:.68rem;letter-spacing:.15em;color:#7ce2cb;font-weight:800}
+.evidence-hero{font-size:1.22rem;font-weight:800;display:flex;align-items:center;gap:12px;line-height:1.3}
+.evidence-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.evidence-tiles>div{padding:13px 9px;background:#213b43;border:1px solid #385861;border-radius:10px;min-width:0}
+.evidence-tiles strong{display:block;font-size:.85rem;color:#e5fff6}.evidence-tiles small{display:block;color:#a8c8c5;font-size:.7rem;margin-top:5px}
+.evidence-result{margin-top:auto;background:#235347;border:1px solid #418b74;border-radius:11px;padding:14px;font-weight:800;color:#b8ffe7}
+.evidence-result span{display:block;color:#c3dcd5;font-size:.75rem;font-weight:400;margin-top:4px}
+.evidence-bridge{font-size:2rem;color:#82e5cb;display:grid;place-items:center;font-weight:800}
+.evidence-outcome{grid-column:1/-1;display:flex;align-items:center;gap:18px;padding:20px;background:linear-gradient(100deg,#1e5a4d,#1a343f);border:1px solid #4c9d88;border-radius:14px}
+.outcome-icon{font-size:2.5rem;color:#a9ffe2}.evidence-outcome strong{font-size:1.2rem}.evidence-outcome p{font-size:.87rem;line-height:1.6;margin:6px 0 0;color:#c8e1dc}
+@media(max-width:850px){.evidence-map{grid-template-columns:1fr}.evidence-bridge{min-height:20px}.evidence-outcome{grid-column:1}.evidence-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Final dashboard refinements */
+@media(min-width:901px){
+  #territorio{align-items:stretch}
+  #territorio>section.card{display:flex;flex-direction:column;min-height:0}
+  #territorio .mapbox{height:auto;min-height:510px;flex:1;margin-top:10px}
+  #territorio .side{align-self:start}
+}
+#rotation-evidence .rotation-card{padding:23px 22px;background:linear-gradient(165deg,#18343a 0%,#11262d 75%);border-color:#42656b;transition:transform .18s,box-shadow .18s}
+#rotation-evidence .rotation-card:hover{transform:translateY(-3px);box-shadow:0 12px 35px #0004}
+.rotation-head{display:flex;align-items:center;gap:10px;margin-bottom:17px}
+.rotation-head .rotation-letter{flex-shrink:0}
+.rotation-heading{font-weight:800;font-size:1.12rem;line-height:1.2}
+.rotation-sub{font-size:.75rem;color:#a9c9c5;margin-top:3px}
+.rotation-steps{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 16px}
+.rotation-step{display:inline-flex;align-items:center;gap:5px;background:#244147;border:1px solid #416368;padding:6px 8px;border-radius:9px;font-size:.8rem;font-weight:650}
+.rotation-step .emoji{font-size:1.15rem}
+.rotation-step-arrow{color:#78d6bd;font-weight:900}
+.rotation-track{display:flex;gap:3px;height:18px;overflow:hidden;border-radius:7px;margin:12px 0 7px;background:#31454b}
+.rotation-track span{display:block;min-width:2px}
+.rotation-track .rotation-gap{background:repeating-linear-gradient(45deg,#4b6562,#4b6562 4px,#344b4a 4px,#344b4a 8px)}
+.rotation-track .rotation-idle{background:#293b40}
+.rotation-scale{display:flex;justify-content:space-between;color:#9cbab6;font-size:.71rem;margin-bottom:17px}
+.rotation-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.rotation-stat{background:#10252a;border:1px solid #35545a;padding:12px;border-radius:11px}
+.rotation-stat b{display:block;font-size:1.35rem;color:#9ff1d9}
+.rotation-stat small{color:#a8c2c0;font-size:.7rem}
+.rotation-footer{font-size:.76rem;color:#b0c9c5;margin-top:13px}
+#cultivos .six-crop-card.best{background:#142b2e;border-color:#67dbb7}
+#cultivos .six-crop-card.best::after{content:'LOWEST SHORTFALL IN THIS MONTH · NOT A SELECTED CROP'}
+@media(max-width:650px){.rotation-stats{grid-template-columns:1fr 1fr}}
+
+/* Fill the entire grid row with the actual map instead of an empty left column. */
+@media (min-width:901px) {
+  #territorio { align-items:stretch !important; }
+  #territorio > section.card {
+    display:flex !important;
+    flex-direction:column !important;
+    height:auto !important;
+    min-height:0 !important;
+    align-self:stretch !important;
+  }
+  #territorio .mapbox,
+  .layout > section.card > .mapbox {
+    display:block !important;
+    flex:1 1 auto !important;
+    height:auto !important;
+    min-height:540px !important;
+    max-height:none !important;
+    margin-top:10px;
+  }
+}
+
+/* Balanced map: no giant map and no empty space below it. */
+@media (min-width: 761px) {
+  #territorio { align-items:start !important; }
+  #territorio > section.card {
+    height: 680px !important;
+    max-height: 680px !important;
+    align-self:start !important;
+    display:flex !important;
+    flex-direction:column !important;
+  }
+  #territorio .mapbox,
+  .layout > section.card > .mapbox {
+    height: 490px !important;
+    min-height: 0 !important;
+    max-height: 490px !important;
+    flex: 1 1 auto !important;
+  }
+  #territorio > .side {
+    height:680px !important;
+    max-height:680px !important;
+    overflow-y:auto !important;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+    scrollbar-color:#4b827c #12252a;
+    align-self:start !important;
+  }
+}
+@media (max-width:760px) {
+  #territorio > section.card {height:auto !important;max-height:none !important;}
+  #territorio .mapbox {height:55vh !important;min-height:320px !important;max-height:520px !important;flex:none !important;}
+  #territorio > .side {height:auto !important;max-height:none !important;overflow:visible !important;}
+}
 </style></head><body><main>
-<h1>Repelón Risk Lens – rotation scenario explorer</h1>
-<p class="mut">Screening tool for NASA Space Apps 2026. Rule-based, no machine learning, <b>not a forecast</b> and not a recommendation. Rainfall: NASA GPM IMERG V07; vegetation: Sentinel-2 (ESA). Thresholds, weights and every scenario setting below are <b>uncalibrated assumptions</b> to be reviewed locally.</p>
-<div class="steps"><span><b>1</b> Click a parcel on the map</span><span><b>2</b> Read what it means</span><span><b>3</b> Try less rain</span><span><b>4</b> Edit the rotation calendars</span><span><b>5</b> Set the farmer’s priorities</span></div>
-
-<div class="layout">
-<section class="card" style="margin:0"><h2>Map of Repelón parcels</h2>
-<div class="row"><select id="mm" aria-label="colour by"><option value="r">Colour by risk level</option><option value="v">Colour by vulnerability</option><option value="n">No colour (outlines only – see the ground)</option></select>
-<select id="mf" aria-label="filter"><option value="">All parcels (1,848)</option><option value="a">Agricultural only (386)</option></select>
-<select id="mb" aria-label="base map"><option value="sat">Satellite</option><option value="osm">Streets</option><option value="none">No base map</option></select></div>
+<header class="hero"><div class="hero-kicker"><span class="live-dot"></span> NASA SPACE APPS 2026 <span class="hero-sep">/</span> REPELÓN, ATLÁNTICO</div><h1>See your land from space<span class="hero-period">.</span></h1><p>Discover environmental signals across Repelón, then explore six crops and three two-year rotation scenarios.</p><div class="hero-stats"><span><b>1.848</b> parcels screened</span><span><b>6</b> crops modeled</span><span><b>2018–2025</b> climate studied</span></div></header><nav class="journey"><a href="#territorio"><b>01</b> Explore the land</a><a href="#rotation-evidence"><b>02</b> Compare rotations</a><a href="#cultivos"><b>03</b> Explore six crops</a><a href="#metodo"><b>04</b> How it works</a></nav>
+<div class="layout" id="territorio">
+<section class="card" style="margin:0"><div class="eyebrow">01 / EXPLORE THE LAND</div><h2>What is happening in Repelón?</h2><p class="lead">Click any parcel to explore its environmental signals.</p>
+<div class="row"><select aria-label="colour by" id="mm"><option value="r">Color by risk</option><option value="v">Color by vulnerability</option><option value="n">Parcel outlines only</option></select>
+<select aria-label="filter" id="mf"><option value="">All parcels (1,848)</option><option value="a">Flagged agricultural parcels (382)</option></select>
+<select aria-label="base map" id="mb"><option value="sat">Satellite</option><option value="osm">Streets</option><option value="none">No basemap</option></select></div>
 <div class="mapbox" id="mapbox"><canvas id="map"></canvas>
-<div class="ctl"><button id="zi" title="Zoom in" aria-label="Zoom in">+</button><button id="zo" title="Zoom out" aria-label="Zoom out">−</button><button id="zf" title="Show all parcels" aria-label="Show all">⤢</button><button id="zs" title="Zoom to selected parcel" aria-label="Zoom to selected">◎</button></div>
+<div class="ctl"><button aria-label="Zoom in" id="zi" title="Zoom in">+</button><button aria-label="Zoom out" id="zo" title="Zoom out">−</button><button aria-label="Show all" id="zf" title="Show all parcels">⤢</button><button aria-label="Zoom to selected" id="zs" title="Zoom to selected parcel">◎</button></div>
 <div class="leg" id="leg"></div><div id="tip"></div><div class="attr" id="attr"></div></div>
-<p class="mut" style="margin:6px 0 0">Tip: drag to pan, scroll or pinch to zoom, click a parcel to select it. Very small lots are drawn as a minimum-size square so they stay clickable.</p>
+<p class="mut" style="margin:6px 0 0">Drag to pan · Scroll to zoom · Click a parcel to select it.</p>
 </section>
+<aside class="side"><section class="card" style="margin:0"><div class="eyebrow">SELECTED PARCEL</div><h2>Understand this parcel</h2>
+<div class="row sp"><input aria-label="parcel code" id="code" list="dl" placeholder="Enter a 30-digit parcel code" size="30" type="text"/><datalist id="dl"></datalist></div>
+<div class="row sp"><button class="pill" data-j="ex">Example parcel</button><button class="pill" data-j="vul">Highest farm vulnerability</button><button class="pill" data-j="irr">Lowest stress in district</button></div>
+<div id="pinfo"></div><div aria-live="polite" class="insight"><h3>What the data tells us</h3><div id="plainExplanation">Select a parcel to explore its environmental signals.</div></div></section>
+<section class="card"><div class="eyebrow">TEST A SCENARIO</div><h2>What if rainfall changes?</h2><p class="lead">Move the slider to see the map respond.</p>
+<div class="row"><button class="pill" data-k="100">100 %</button><button class="pill" data-k="80">80 %</button><button class="pill" data-k="60">60 %</button><button class="pill" data-k="40">40 %</button><button class="pill" data-k="20">20 %</button><span class="mut">of baseline rainfall</span></div>
+<label>Simulated rainfall = <b id="kv"></b> % of baseline rainfall <input id="k" max="120" min="20" type="range" value="100"/></label><div id="risk"></div>
+<p class="mut">Parcel colors change under a hypothetical rainfall scenario, not a forecast. Observed vegetation stays unchanged. This is separate from the regional crop comparison.</p></section></aside></div>
+<section class="card" id="rotation-evidence" style="margin-top:18px;padding:25px">
+<div class="eyebrow">02 / THE MAIN EXPERIENCE · TWO-YEAR ROTATIONS</div>
+<h2>Explore three crop rotations</h2>
+<p class="lead">Compare proposed sequences across 24 months, using six modeled crops. Each option has different climate exposure, crop diversity and time in cultivation.</p>
+<div class="rotation-grid" id="rotationEvidence"><p class="mut">Six-crop results have not been calculated yet. Run the extended Notebook 2 and copy <code>rotation_results.js</code> into this folder.</p></div>
+<p class="mut">Climate shortfall uses NASA POWER and reference crop coefficients. Rice needs additional water for flooded-field preparation, ponding and percolation. Coverage periods, soil improvements and yields are not modeled. No parcel-level crop suitability is inferred.</p>
+</section><section class="card crops-section" id="cultivos"><div class="eyebrow">03 / EXPLORE THE SIX CROPS</div><h2>Find the best planting window to explore</h2><p class="lead">Compare the same regional climate across six crops and twelve planting months. The highlighted crop has the lowest modeled shortfall for the selected month—not a proven best crop for a field.</p>
+<div class="row"><label>Planting month <select id="sixMonth"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></label></div>
+<div class="six-crop-grid" id="sixCropGrid"><p class="mut">Loading the six-crop results…</p></div>
+<div class="warn">A lower modeled shortfall is not proof of higher yield or suitability. Flooded rice requires additional water beyond crop evapotranspiration.</div></section>
+<section class="card decision-card" id="decision"><div class="eyebrow">03 / YOUR DECISION</div><h2>Choose what matters most</h2><p class="lead">Your priority changes the evidence shown, not the underlying scientific measurements.</p>
+<div aria-label="Farmer priorities" class="priority-choices" role="group"><button class="priority-btn selected" data-priority="water" type="button">💧 Water</button><button class="priority-btn" data-priority="soil" type="button">🌱 Soil health</button><button class="priority-btn" data-priority="income" type="button">🛒 Market</button><button class="priority-btn" data-priority="feed" type="button">🐄 Feed</button></div>
+<div aria-live="polite" id="priorityExplain"></div></section>
 
-<aside class="side"><section class="card" style="margin:0"><h2>Selected parcel</h2>
-<div class="row sp"><input type="text" id="code" list="dl" size="30" aria-label="parcel code" placeholder="type a 30-digit parcel code"><datalist id="dl"></datalist></div>
-<div class="row sp"><button class="pill" data-j="ex">Example parcel</button><button class="pill" data-j="vul">Most vulnerable farmland</button><button class="pill" data-j="irr">Greenest irrigated parcel</button></div>
-<label class="mut" style="margin:2px 0"><input type="checkbox" id="all"> list all 1,848 codes in the box (default: 386 agricultural)</label>
-<div id="pinfo"></div></section>
-<section class="card"><h2>Rainfall what-if (not a forecast)</h2>
-<div class="row"><button class="pill" data-k="100">100 %</button><button class="pill" data-k="80">80 %</button><button class="pill" data-k="60">60 %</button><span class="mut">of the 10-year normal</span></div>
-<label>Rain = <b id="kv"></b> % of normal <input type="range" id="k" min="40" max="120" value="100"></label><div id="risk"></div>
-<p class="mut">Vulnerability stays fixed; hazard = 1 − rain/normal; risk = 0.5·hazard + 0.5·vulnerability. The same factor scales the monthly rain in the calendars (assumption). A month is “dry” if scaled rain &lt; 50 mm (assumption).</p></section></aside></div>
-
-<section class="card"><h2>Rotation calendars (editable assumptions)</h2>
-<p class="mut" style="margin-top:0">Each month of the year gets one use. Orange underline = dry month (&lt; 50 mm). Change a cell and the table and ranking below update.</p>
-<div class="sc"><table class="cal" id="cal"></table></div>
-<div class="lg mut"><span class="t0">Pasture</span><span class="t1">Pasture + reserve</span><span class="t2">Crop</span><span class="t3">Cover</span><span class="t4">Fallow</span></div>
-<div class="mut">Source for sowing at the start of the rains: Contexto Ganadero; reserve-forage example: AGROSAVIA (see repository). Crop windows are assumptions. Monthly rain: GPM IMERG 2021–2025 mean.</div><div id="met" class="sc"></div></section>
-
-<section class="card"><h2>Farmer priorities → scenario reading</h2><div id="pri"></div><div id="rank"></div>
-<p class="mut">Scores are simple shares computed from the calendars (e.g., water-needing months that are not dry). Plans without a crop score 0 on “sowing with rains”. This is a transparent reading of assumptions, not a yield or income model; soil health is reduced to months with cover.</p></section>
-
-<details class="card"><summary>What do these terms mean?</summary>
-<p><b>Vulnerability</b> (0–1): how dry or sparse the vegetation looks from Sentinel-2 (NDVI = greenness, NDMI = moisture, SAVI = greenness corrected for soil). <b>Hazard</b> (0–1): how far recent rain fell below the 10-year normal (NASA GPM IMERG). <b>Risk</b> = half hazard + half vulnerability. <b>Irrigation district</b>: area served by the ASUREP district registry; “outside” does not mean rainfed.</p></details>
-<p class="mut">Limits: no parcel-level crop data; High class mostly tiny bare-soil lots (not crops); ranking is robust to ±20 % changes, class counts are not; farmer-priority weights are adjustable assumptions. Full text in the repository (README, LIMITATIONS.md, 06_documentos/ROTATION_SCENARIOS_EN.md). AI tools helped draft code and text; the author reviewed the results.</p>
-</main>
-<script src="data.js?v=4"></script><script src="geo.js?v=1"></script><script>
+<section id="metodo"><div class="eyebrow">05 / HOW IT WORKS</div><h2 class="method-heading">Clear choices, traceable evidence.</h2><p class="lead">The parcel screening and regional crop model operate at different scales. Neither predicts parcel yields.</p><details class="card"><summary>Explore technical indicators and sources</summary>
+<p><b>Vulnerability</b> (0–1): Sentinel-2 vegetation signals (NDVI: greenness; NDMI: vegetation moisture; SAVI: soil-adjusted greenness). <b>Hazard</b> (0–1): CHIRPS V3 relative rainfall deficit. <b>Risk index</b> = 50% hazard + 50% vulnerability. Outside the irrigation district does not necessarily mean no irrigation.</p></details>
+<p class="mut">Limits: current crops, effective irrigation, yields and stored soil water are unknown. Regional crop scenarios are not parcel-level recommendations. Sensitivity frequencies are not harvest probabilities.</p>
+<div aria-label="How the research becomes an interactive decision explorer" class="evidence-map">
+<div class="evidence-path"><div class="evidence-kicker">01 · OBSERVE THE LAND</div><div class="evidence-hero">🛰️ <span>Where might environmental stress matter?</span></div><div class="evidence-tiles"><div><strong>CHIRPS V3</strong><small>Rainfall patterns</small></div><div><strong>Sentinel-2</strong><small>Vegetation signals</small></div><div><strong>SoilGrids</strong><small>Soil context</small></div></div><div class="evidence-result">1,848 parcels <span>Environmental screening · not measured crop damage</span></div></div>
+<div aria-hidden="true" class="evidence-bridge">+</div>
+<div class="evidence-path"><div class="evidence-kicker">02 · TEST CROP SEQUENCES</div><div class="evidence-hero">🌱 <span>How might planting choices change climate exposure?</span></div><div class="evidence-tiles"><div><strong>NASA POWER</strong><small>Daily climate</small></div><div><strong>6 crops</strong><small>Reference Kc and cycles</small></div><div><strong>3 rotations</strong><small>24-month scenarios</small></div></div><div class="evidence-result">162 complete rotation scenarios <span>Potential daily shortfall · not yield forecasts</span></div></div>
+<div class="evidence-outcome"><span class="outcome-icon">↗</span><div><strong>Explore, compare, then verify locally</strong><p>Choose a parcel, test rainfall assumptions and compare rotation scenarios. IDEAM checks satellite rainfall; EVA provides municipal agricultural context. These are complementary analyses, not parcel-specific crop recommendations.</p></div></div>
+</div><p class="mut">These branches have different spatial scales. Regional climate results do not measure parcel productivity.</p></section><details class="card" id="legacy-analysis" style="margin-top:18px"><summary>Archived methods · Earlier three-crop sensitivity analysis and prototype calendars</summary><details class="card" style="margin-top:18px"><summary>Open previous three-crop audit (April–June)</summary><section class="card crops-section" id="historical-three"><div class="eyebrow">PREVIOUS THREE-CROP AUDIT</div><h2>Original three-crop sensitivity analysis</h2>
+<p class="mut">This is the earlier April–June analysis. It uses a different comparison design and must not be treated as a six-crop ranking.</p>
+<div class="row"><label>Planting month <select id="plantMonth"><option value="4">April</option><option value="5">May</option><option value="6">June</option></select></label><label>Rainfall assumption <select id="rainCase"><option value="base">Historical baseline</option><option value="lessRain">20% less rain</option><option value="moreRain">20% more rain</option></select></label></div>
+<div class="crop-grid" id="strategies"></div><div class="mut" id="cropExplain"></div><details><summary>View illustrative annual calendar</summary><div class="sc"><table class="cal" id="yearCalendar"></table></div><p class="mut">Illustrative occupancy only; not a validated rotation or modeled result for other planting months.</p></details>
+<div class="warn">Based on NASA POWER and reference crop coefficients. Does not measure actual soil water or predict harvests.</div></section>
+</details><details class="card" style="margin-top:18px"><summary>Open older single-crop calendar builder (illustrative only)</summary><section class="card rotation-section" id="rotations"><div class="eyebrow">04 / BUILD A PLAN</div><h2>Explore three planting calendars</h2><p class="lead">Edit the crop, start month, and post-harvest land cover in each option. These are illustrative sequences, not validated agronomic rotations.</p>
+<div class="rotation-grid" id="rotationBuilder"></div><div aria-live="polite" class="rotation-summary" id="rotationCompare"></div>
+<details><summary>Why these calendars are exploratory</summary><p class="mut">Only April–June sowing dates were modeled. The 120-day maize/sorghum and 210-day cassava cycles are reference cases; actual crop durations vary. A cover or fallow period is a management placeholder with no modeled water, soil or yield benefit. We have not evaluated a real farm's current rotation.</p></details></section>
+</details></details></main>
+<script>
+</script>
+<script src="rotation_results.js?v=1"></script>
+<script src="data.js?v=5"></script><script src="crop_results.js?v=1"></script><script src="geo.js?v=1"></script><script>
 const $=i=>document.getElementById(i),MO='Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),TY=['Pasture','Pasture+reserve','Crop','Cover','Fallow'];
-const PL={A:Array(12).fill(0),B:[1,1,1,0,2,2,2,2,0,0,0,1],C:[3,3,3,4,2,2,2,2,3,3,3,3]},NM={A:'A Current grazing',B:'B Pasture + forage reserve',C:'C Short-cycle crop + cover'};
-const PN=['Low dry-season water exposure','Dry-season feed (reserve)','Soil covered (fewer fallow months)','Sowing with the rains'];
-const CL={Low:'#2a9d8f',Moderate:'#f4a261',High:'#d62828',Critical:'#7f0000'},RK={Low:0,Moderate:1,High:2,Critical:3};
-const lvl=r=>r>.75?'Critical':r>.5?'High':r>.25?'Moderate':'Low';
+const STRATEGIES=[{id:'A',name:'A · Existing practice (farmer input)',crop:null,desc:'Baseline not supplied. Enter the actual crop and rotation history; no invented baseline score.'},{id:'B',name:'B · Maize → cover / locally defined break',crop:'Maize',desc:'120-day test cycle. Cover period is an illustrative management option; soil benefits are not quantified.'},{id:'C',name:'C · Sorghum → cover / locally defined break',crop:'Sorghum',desc:'120-day test cycle. Forage/market suitability and pest rotation effects require local verification.'},{id:'D',name:'D · Cassava → cover / locally defined break',crop:'Cassava',desc:'210-day baseline test cycle; sensitivity tested up to 330 days. Not necessarily a rotation within one year.'}];
+const CL={Low:'#2cb6a0',Moderate:'#f5ac58',High:'#ef665e',Critical:'#a83452'},RK={Low:0,Moderate:1,High:2,Critical:3};
+const LABEL={Low:'Low',Moderate:'Moderate',High:'High',Critical:'Critical'};const lvl=r=>r>.75?'Critical':r>.5?'High':r>.25?'Moderate':'Low';
+function scenarioLevel(p){const k=Number($('k').value)/100;const A=Math.max(0,Math.min(1,2*(p[6]-.5*p[4])+(1-k)));return lvl(.5*A+.5*p[4])}
 function vcol(v){const s=[[255,255,178],[253,141,60],[189,0,38]],t=Math.min(1,Math.max(0,v))*2,i=t>=1?1:0,f=t-i,a=s[i],b=s[i+1];return'rgb('+a.map((x,k)=>Math.round(x+(b[k]-x)*f)).join(',')+')'}
 let cur=null,sel=null;
 const HAS_GEO=typeof GEO!=='undefined'&&PARCELS[0].length>=13;
 /* ---------- parcel table logic ---------- */
-function fill(){const a=$('all').checked;$('dl').innerHTML=PARCELS.filter(p=>a||p[10]).map(p=>`<option value="${p[0]}">`).join('')}
-function metrics(pl,k){const dry=CAL.map(x=>x*k<50);let w=0,wd=0,dm=0,dr=0,c=0,cd=0,f=0;
-pl.forEach((t,i)=>{if(dry[i]){dm++;if(t==1)dr++}if(t<=2){w++;if(dry[i])wd++}if(t==2){c++;if(dry[i])cd++}if(t==4)f++});
-return{w,wd,dm,dr,c,cd,f,s:[w?1-wd/w:1,dm?dr/dm:1,1-f/12,c?1-cd/c:0]}}
-function sentence(p,R,k){const v=p[4],vt=v<.25?'green and moist':v<.5?'moderately stressed':'dry or sparse';
-return `<p style="margin:.4em 0">This is <b>${p[3].toLowerCase()}</b>, ${p[1]} ha, ${p[2]?'inside':'outside'} the irrigation district. Its vegetation looks <b>${vt}</b> (vulnerability ${p[4]}). In the 60-day window it received ${p[5]} % of the normal rain.</p>`}
-function mulb(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-function show(){const p=PARCELS.find(x=>x[0]===$('code').value.trim());if(!p){$('pinfo').innerHTML='<p class="mut">Pick a parcel on the map, or choose a code from the list.</p>';return}
-if(cur!==p[0]){cur=p[0];sel=p[0];$('k').value=Math.min(120,Math.max(40,Math.round(p[5])));try{history.replaceState(null,'','#p='+p[0])}catch(e){}draw()}
-const k=$('k').value/100;$('kv').textContent=$('k').value;const A=Math.max(0,1-k),R=.5*A+.5*p[4],L=lvl(R);
-$('pinfo').innerHTML=`<div class="row"><span class="badge" style="background:${CL[p[7]]}">${p[7]}</span><span class="mut">risk in this run: ${p[6]}</span></div>`+sentence(p,R,k)+`<table><tr><td class="mut">Cover (WorldCover 2021)</td><td>${p[3]}</td></tr><tr><td class="mut">Clay 0–5 cm (SoilGrids, context)</td><td>${p[8]==null?'no data':p[8]+' %'}</td></tr></table>`+((p[9]||!p[10])?'<div class="warn">Small or non-agricultural parcel: do not read this result as crop stress.</div>':'')+'<div class="mut" style="margin-top:6px"><b>To judge an alternative for this parcel you would still need</b> (requires local verification): current crop or cover · water available for irrigation · soil and drainage · planned sowing date · machinery and resources.</div>';
-$('risk').innerHTML=`<div class="row"><span class="big" style="color:${CL[L]}">${R.toFixed(2)}</span><span class="badge" style="background:${CL[L]}">${L}</span></div><span class="mut">risk at ${$('k').value} % of normal rain (hazard ${A.toFixed(2)})${L!==p[7]?' · it changes from '+p[7]+' at observed rain':''}</span>`;
-document.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',+b.dataset.k===+$('k').value));
-const dry=CAL.map(x=>x*k<50);
-$('cal').innerHTML='<tr><th></th>'+MO.map((m,i)=>`<th class="${dry[i]?'dryh':''}">${m}<br><span class="mut">${Math.round(CAL[i]*k)} mm</span></th>`).join('')+'</tr>'+Object.keys(PL).map(n=>`<tr><td><b>${n}</b></td>${PL[n].map((t,i)=>`<td><select class="t${t}" data-n="${n}" data-i="${i}">${TY.map((y,j)=>`<option value="${j}"${j==t?' selected':''}>${y}</option>`).join('')}</select></td>`).join('')}</tr>`).join('');
-document.querySelectorAll('#cal select').forEach(s=>s.onchange=e=>{PL[e.target.dataset.n][+e.target.dataset.i]=+e.target.value;e.target.className='t'+e.target.value;score()});score()}
-function score(){const k=$('k').value/100,res=Object.keys(PL).map(n=>({n,m:metrics(PL[n],k)}));
-$('met').innerHTML='<table><tr><th>Scenario</th><th>Water-needing months</th><th>…of which dry</th><th>Crop months in dry</th><th>Dry months with reserve</th><th>Fallow months</th></tr>'+res.map(r=>`<tr><td>${NM[r.n]}</td><td>${r.m.w}</td><td>${r.m.wd}</td><td>${r.m.cd}/${r.m.c}</td><td>${r.m.dr}/${r.m.dm}</td><td>${r.m.f}</td></tr>`).join('')+'</table>';
-const W=[...document.querySelectorAll('#pri input')].map(i=>+i.value);if(!W.length)return;
-const sc=(m,w)=>{const t=w.reduce((a,b)=>a+b,0);return t?m.s.reduce((a,v,i)=>a+v*w[i],0)/t:0};
-const top=w=>res.map(r=>({n:r.n,v:sc(r.m,w)})).sort((a,b)=>b.v-a.v);const rk=top(W),cnt={A:0,B:0,C:0};
-const rg=mulb(2026);for(let i=0;i<300;i++)cnt[top(PN.map(()=>rg()))[0].n]++;
-const mx=Math.max(cnt.A,cnt.B,cnt.C),dom=mx>=210;
-$('rank').innerHTML=rk.map(r=>`<div class="rk"><span>${NM[r.n]}</span><div class="trk"><div class="bar" style="width:${Math.round(r.v*100)}%"></div></div><b>${r.v.toFixed(2)}</b></div>`).join('')+`<p class="mut">Top scenario under 300 random priority settings: A ${Math.round(cnt.A/3)} % · B ${Math.round(cnt.B/3)} % · C ${Math.round(cnt.C/3)} %. ${dom?'One scenario leads under most priority settings, but only because of how the calendars above are defined (e.g., B combines reserve feed and a crop window). That reflects our assumptions, not field evidence: edit the calendars and see it change.':'No scenario dominates: the choice depends on the farmer’s priorities and on local review; there is no single winner.'}</p>`}
-$('pri').innerHTML=PN.map(n=>`<label>${n}: <input type="range" min="0" max="5" value="3"></label>`).join('');
-document.querySelectorAll('#pri input').forEach(i=>i.oninput=score);
+function fill(){const agOnly=$('mf').value==='a';$('dl').innerHTML=PARCELS.filter(p=>!agOnly||p[10]).map(p=>`<option value="${p[0]}">`).join('')}
+function landLabel(raw){const names={Arboles:'Trees',Agua:'Water',Construido:'Built-up',Cultivo:'Cropland',Humedal:'Wetland',Matorral:'Shrubland',Pastizal:'Grassland',Suelo_desnudo:'Bare soil',SueloDesnudo:'Bare soil',Nubes:'Clouds'};return names[String(raw)]||String(raw)}
+function fmt(v,n=1){const x=Number(v);return Number.isFinite(x)?x.toFixed(n):'—'}
+function sentence(p,R,k){const cover=landLabel(p[3]);return `<div class="parcel-metrics" aria-label="Parcel environmental indicators"><div class="metric-tile"><span class="metric-symbol">◫</span><span class="metric-name">Land cover</span><strong>${cover}</strong></div><div class="metric-tile"><span class="metric-symbol">▧</span><span class="metric-name">Parcel area</span><strong>${fmt(p[1],1)} <small>ha</small></strong></div><div class="metric-tile"><span class="metric-symbol">☁</span><span class="metric-name">Relative rainfall</span><strong>${fmt(p[5],1)}<small>%</small></strong><span class="metric-sub">of reference</span></div><div class="metric-tile"><span class="metric-symbol">◉</span><span class="metric-name">Vegetation vulnerability</span><strong>${fmt(p[4],3)}</strong><span class="metric-sub">index · 0–1</span></div></div><div class="parcel-context"><span class="context-dot"></span>${p[2]?'Inside':'Outside'} mapped irrigation district <span class="context-separator">·</span> Soil clay: <b>${p[8]==null?'Not available':fmt(p[8],1)+'%'}</b></div>`}
+
+function show(){const p=PARCELS.find(x=>x[0]===$('code').value.trim());if(!p){$('pinfo').innerHTML='<p class="mut">Select a parcel on the map or enter its code.</p>';if($('plainExplanation'))$('plainExplanation').textContent='Choose a parcel to see an explanation.';return}
+if(cur!==p[0]){cur=p[0];sel=p[0];$('k').value=100;try{history.replaceState(null,'','#p='+p[0])}catch(e){}draw()}
+const k=$('k').value/100;$('kv').textContent=$('k').value;const A=Math.max(0,Math.min(1,2*(p[6]-.5*p[4])+(1-k))),R=.5*A+.5*p[4],L=lvl(R);
+$('pinfo').innerHTML=`<div class="parcel-status"><span class="badge" style="background:${CL[p[7]]}">${LABEL[p[7]]||p[7]}</span><span class="mut">Baseline screening index <b>${fmt(p[6],3)}</b></span></div>`+sentence(p,R,k)+((p[9]||!p[10])?'<div class="warn">This parcel is small or not classified as agricultural. The screening does not measure crop stress.</div>':'')+`<div class="check-note"><span aria-hidden="true">✓</span><div><b>Before planning a crop</b><span>Check current land use, irrigation, drainage, planting date and available resources.</span></div></div>`;
+$('risk').innerHTML=`<div class="row"><span class="big" style="color:${CL[L]}">${R.toFixed(2)}</span><span class="badge" style="background:${CL[L]}">${LABEL[L]||L}</span></div><span class="mut">exploratory risk at ${$('k').value}% (hazard ${A.toFixed(2)})${L!==p[7]?' · changed from '+p[7]+' under observed rainfall':''}</span>`;
+if($('plainExplanation')){const cover=landLabel(p[3]).toLowerCase();const ag=!!p[10];const changed=Number($('k').value)!==100;const riskText=changed?'under this hypothetical rainfall setting':'under the baseline rainfall setting';$('plainExplanation').innerHTML=`<div class="insight-head"><span class="insight-icon" aria-hidden="true">✦</span><div><strong>${LABEL[L]} screening level</strong><span>${riskText}</span></div></div><div class="insight-steps"><div class="insight-step"><span class="step-symbol">◉</span><div><b>What we see</b><span>Mostly ${cover} cover, with a ${LABEL[L].toLowerCase()} environmental screening level.</span></div></div><div class="insight-step"><span class="step-symbol">≈</span><div><b>What it means</b><span>Rainfall and vegetation signals are combined; this does not measure crop damage.</span></div></div><div class="insight-step"><span class="step-symbol">↗</span><div><b>What to explore next</b><span>${ag?'Compare regional crop scenarios, then check local soil and water conditions.':'Confirm actual land use before considering crop options.'}</span></div></div></div>`;}document.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',+b.dataset.k===+$('k').value));
+renderStrategies();sched()}
+function renderStrategies(){const m=$('plantMonth').value,weather=$('rainCase').value==='base'?'deficit':$('rainCase').value;
+const crops=[['Maize','Maize','120 days'],['Sorghum','Sorghum','120 days'],['Cassava','Cassava','210 days (base)']];
+const vals=crops.map(([key,name,cycle])=>({key,name,cycle,r:CROP_RESULTS.summary[key][m]}));
+const best=Math.min(...vals.map(v=>v.r[weather]));const icons={Maize:"🌽",Sorghum:"🌾",Cassava:"🌿"};const descriptions={Maize:"Short-cycle crop",Sorghum:"Alternative short-cycle crop",Cassava:"Longer-cycle crop"};
+$('strategies').innerHTML=vals.map(v=>`<div class="crop-card ${v.r[weather]===best?'best':''}"><div class="crop-icon">${icons[v.key]}</div><strong>${v.name}</strong><span class="mut">${descriptions[v.key]} · ${v.cycle}</span><div class="crop-number">${v.r[weather].toFixed(2)} <small>mm/day</small></div><div class="mut">Modeled daily rainfall shortfall</div><div class="crop-meter"><span style="width:${Math.min(100,v.r[weather]/3*100)}%"></span></div><p class="mut">Days with shortfall: <b>${(v.r.dryDays*100).toFixed(1)} %</b> (baseline rainfall)</p>${v.r[weather]===best?'<span class="tag">Lowest modeled shortfall</span>':''}</div>`).join('');
+const win=CROP_RESULTS.monthly[m];$('cropExplain').innerHTML=`<p><b>How robust is this comparison?</b> Cassava wins ${win.Yuca.toFixed(1)}%, sorghum ${win.Sorgo.toFixed(1)}%, and maize ${win.Maiz.toFixed(1)}% of tested sensitivity combinations for this month. These are <b>scenario frequencies, not harvest probabilities</b>; they are regional, not parcel predictions.</p>`;
+const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const start=Number(m)-1;let table='<tr><th>Crop</th>'+monthNames.map(x=>`<th>${x}</th>`).join('')+'</tr>';
+for(const v of vals){const days=v.key==='Cassava'?210:120;table+=`<tr><th>${v.name}</th>`+monthNames.map((_,i)=>{const d=((i-start+12)%12)*30;const active=d<days;return `<td class="${active?'t2':'t4'}" title="${active?'Illustrative crop window':'No crop modeled'}">${active?'●':'·'}</td>`}).join('')+'</tr>'} $('yearCalendar').innerHTML=table;
+renderPriority();renderRotations();}
+function renderPriority(){const choice=document.querySelector('.priority-btn.selected')?.dataset.priority||'water';const month=$('plantMonth').value,weather=$('rainCase').value==='base'?'deficit':$('rainCase').value;
+const crops=[['Maize','Maize'],['Sorghum','Sorghum'],['Cassava','Cassava']];const sorted=crops.map(([key,name])=>({name,value:CROP_RESULTS.summary[key][month][weather]})).sort((a,b)=>a.value-b.value);
+const box=$('priorityExplain');if(choice==='water'){box.innerHTML=`<div class="evidence-pill">CALCULATED · NASA POWER + crop coefficients</div><h3>${sorted[0].name} has the lowest modeled shortfall</h3><p>${sorted[0].value.toFixed(2)} mm/day for the selected month and rainfall assumption, versus ${sorted[1].value.toFixed(2)} for ${sorted[1].name} and ${sorted[2].value.toFixed(2)} for ${sorted[2].name}. This is not a drought-tolerance or yield ranking.</p>`}
+else if(choice==='soil'){box.innerHTML='<div class="evidence-pill qualitative">DOCUMENTARY / LOCAL VERIFICATION</div><h3>Keep soil covered between crops</h3><p>Cover crops and managed residues may protect bare soil. No erosion reduction, nitrogen gain, or soil recovery has been calculated for these parcels. Ask about available cover species and soil management.</p>'}
+else if(choice==='income'){box.innerHTML='<div class="evidence-pill qualitative">LOCAL DATA NEEDED</div><h3>Check market access before switching crops</h3><p>Municipal EVA records establish local agricultural context, not farm profits. Compare prices, input costs, labor, buyers and transport before making an economic decision.</p>'}
+else{box.innerHTML='<div class="evidence-pill qualitative">LOCAL DATA NEEDED</div><h3>Explore feed options with local guidance</h3><p>Some sorghum varieties can be used for forage, but forage quality, biomass, livestock needs and harvest timing have not been evaluated here.</p>'}}
+document.querySelectorAll('.priority-btn').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.priority-btn').forEach(b=>b.classList.toggle('selected',b===btn));renderPriority()});
+const calendarOptions=[{crop:'Maize',month:4,cover:'cover'},{crop:'Sorghum',month:5,cover:'fallow'},{crop:'Cassava',month:6,cover:'cover'}];
+const cropDuration={Maize:120,Sorghum:120,Cassava:210};
+function renderRotations(){const root=$('rotationBuilder');if(!root)return;
+root.innerHTML=calendarOptions.map((s,i)=>`<article class="rotation-card"><div class="rotation-title"><span class="rotation-letter">${'ABC'[i]}</span><strong>Calendar ${'ABC'[i]}</strong></div><label>Crop<select data-cal="${i}" data-field="crop">${['Maize','Sorghum','Cassava'].map(c=>`<option value="${c}" ${c===s.crop?'selected':''}>${c}</option>`).join('')}</select></label><label>Planting month<select data-cal="${i}" data-field="month">${[[4,'April'],[5,'May'],[6,'June']].map(([m,n])=>`<option value="${m}" ${m===s.month?'selected':''}>${n}</option>`).join('')}</select></label><label>After harvest<select data-cal="${i}" data-field="cover"><option value="cover" ${s.cover==='cover'?'selected':''}>Potential cover crop (not modeled)</option><option value="fallow" ${s.cover==='fallow'?'selected':''}>Fallow / local management</option><option value="unspecified" ${s.cover==='unspecified'?'selected':''}>Not specified</option></select></label><div class="rotation-timeline" id="timeline${i}"></div><div class="rotation-metric" id="calMetric${i}"></div></article>`).join('');
+root.querySelectorAll('select').forEach(el=>el.onchange=()=>{const s=calendarOptions[+el.dataset.cal];s[el.dataset.field]=el.dataset.field==='month'?+el.value:el.value;renderRotations()});
+const w=$('rainCase').value==='base'?'deficit':$('rainCase').value;
+const results=calendarOptions.map((s,i)=>{const r=CROP_RESULTS.summary[s.crop][s.month][w];const dur=cropDuration[s.crop];const first=s.month-1;const days=Array.from({length:12},(_,j)=>{const relative=(j-first+12)%12;return relative*30<dur?'crop':s.cover==='cover'?'cover':s.cover==='fallow'?'fallow':'empty'});
+$('timeline'+i).innerHTML='<div class="timeline-months">'+['J','F','M','A','M','J','J','A','S','O','N','D'].map((m,j)=>`<span title="${['January','February','March','April','May','June','July','August','September','October','November','December'][j]}" class="${days[j]}">${m}</span>`).join('')+'</div><div class="timeline-legend"><span>■ Crop (reference duration)</span><span>■ Post-harvest assumption</span></div>';
+$('calMetric'+i).innerHTML=`<b>${r.toFixed(2)} mm/day</b><span> modeled shortfall · ${dur}-day reference crop cycle</span>`;return{letter:'ABC'[i],crop:s.crop,value:r}});
+const sorted=[...results].sort((a,b)=>a.value-b.value);$('rotationCompare').innerHTML=`<div class="evidence-pill">CROP-ONLY CLIMATE COMPARISON</div><b>Lowest modeled crop shortfall: Calendar ${sorted[0].letter} (${sorted[0].crop})</b><p>Each calendar's number describes its crop only. Cover/fallow periods, multi-year rotation effects, soil health and income are <b>not modeled</b>. Different crops have different cycle lengths, so daily shortfall is not total water demand.</p>`;
+}
+$('plantMonth').onchange=renderStrategies;$('rainCase').onchange=renderStrategies;renderStrategies();
 /* ---------- map (own slippy map: web-mercator tiles + parcel polygons) ---------- */
 const cv=$('map'),cx=cv.getContext('2d'),box=$('mapbox');
 const TILES={sat:{u:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',a:'Imagery © Esri, Maxar, Earthstar Geographics'},osm:{u:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',a:'© OpenStreetMap contributors'}};
@@ -133,16 +329,16 @@ if(bl!=='none'){const n=Math.pow(2,V.z),x0=Math.max(0,Math.floor((V.x-W/2/s)*n))
 for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){const t=tile(bl,V.z,x,y);if(t.ok){cx.drawImage(t.img,ox+x*256,oy+y*256,256.5,256.5)}}}
 if(!HAS_GEO){cx.fillStyle='#b24a00';cx.font='14px system-ui';cx.fillText('Map data missing: upload geo.js and the latest data.js, then reload with Ctrl+F5.',12,24);return}
 const md=$('mm').value,oa=$('mf').value=='a';hit=[];
-const list=G.filter(g=>!oa||g.p[10]).sort((a,b)=>(a.p[10]-b.p[10])||(RK[a.p[7]]-RK[b.p[7]]));
+const list=G.filter(g=>!oa||g.p[10]).sort((a,b)=>(a.p[10]-b.p[10])||(RK[scenarioLevel(a.p)]-RK[scenarioLevel(b.p)]));
 const sg=list.find(g=>g.p[0]===sel);
 function paint(g,hl){const p=g.p,X0=ox+g.b[0]*s,Y0=oy+g.b[1]*s,X1=ox+g.b[2]*s,Y1=oy+g.b[3]*s;if(X1<-20||Y1<-20||X0>W+20||Y0>H+20)return;
-const col=md=='r'?CL[p[7]]:vcol(p[4]),tiny=(X1-X0)<6&&(Y1-Y0)<6;cx.beginPath();
+const col=md=='r'?CL[scenarioLevel(p)]:vcol(p[4]),tiny=(X1-X0)<6&&(Y1-Y0)<6;cx.beginPath();
 if(tiny){const mxc=(X0+X1)/2,myc=(Y0+Y1)/2;cx.rect(mxc-3,myc-3,6,6);if(!hl)hit.push({g,tiny:true,x:mxc,y:myc})}
 else{g.polys.forEach(r=>{r.forEach((q,i)=>{const X=ox+q[0]*s,Y=oy+q[1]*s;i?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.closePath()});if(!hl)hit.push({g,tiny:false,bx:[X0,Y0,X1,Y1]})}
 if(hl){cx.lineWidth=5;cx.strokeStyle='#fff';cx.stroke();cx.lineWidth=2;cx.strokeStyle='#000';cx.stroke();return}
 if(md!='n'){cx.globalAlpha=p[10]?.8:.5;cx.fillStyle=col;cx.fill();cx.globalAlpha=1}cx.lineWidth=md=='n'?1.8:(tiny?1:1.1);cx.strokeStyle=md=='n'?'#ffeb3b':'rgba(255,255,255,.9)';cx.stroke()}
 list.forEach(g=>paint(g,false));if(sg)paint(sg,true);
-$('leg').innerHTML=(md=='n'?'Outlines only: yellow lines are parcel boundaries. Compare with the satellite image to see crops, trees or bare soil.':md=='r'?['Low','Moderate','High'].map(k=>`<span class="sw" style="background:${CL[k]}"></span>${k}`).join(''):'Vulnerability <span class="sw" style="background:'+vcol(0)+'"></span>low <span class="sw" style="background:'+vcol(1)+'"></span>high')+'<br><span class="mut">'+(md=='n'?'':'Faded = not agricultural (trees, bare soil, built-up). Most High parcels are tiny bare-soil lots, not crops.')+'</span>'}
+$('leg').innerHTML=(md=='n'?'Yellow outlines: parcel boundaries.':md=='r'?['Low','Moderate','High'].map(k=>`<span class="sw" style="background:${CL[k]}"></span>${LABEL[k]}`).join(''):'Vulnerability <span class="sw" style="background:'+vcol(0)+'"></span>low <span class="sw" style="background:'+vcol(1)+'"></span>high')+'<br><span class="mut">'+(md=='n'?'':'Colors show a hypothetical rainfall scenario ('+$('k').value+'% of baseline), not a forecast. Faded = non-agricultural.')+'</span>'}
 function pickAt(px,py){let best=null,ba=1e9;hit.forEach(h=>{let ok=false;if(h.tiny)ok=Math.hypot(h.x-px,h.y-py)<=7;else if(px>=h.bx[0]-2&&px<=h.bx[2]+2&&py>=h.bx[1]-2&&py<=h.bx[3]+2){const s=S(),ox=W/2-V.x*s,oy=H/2-V.y*s;ok=h.g.polys.some(r=>inPoly(px,py,r.map(q=>[ox+q[0]*s,oy+q[1]*s])))}
 if(ok&&h.g.p[1]<ba){ba=h.g.p[1];best=h.g}});return best}
 /* gestures */
@@ -157,14 +353,58 @@ cv.addEventListener('dblclick',e=>zoomAt(1,e.offsetX,e.offsetY));
 $('zi').onclick=()=>zoomAt(1,W/2,H/2);$('zo').onclick=()=>zoomAt(-1,W/2,H/2);$('zf').onclick=()=>fitTo(allB());
 function zoomSel(){const g=G.find(x=>x.p[0]===sel);if(!g)return;const w=g.b[2]-g.b[0],h=g.b[3]-g.b[1],pad=Math.max(w,h,.00002)*.75;fitTo([g.c[0]-pad,g.c[1]-pad,g.c[0]+pad,g.c[1]+pad],17)}
 $('zs').onclick=zoomSel;
-$('mm').onchange=$('mf').onchange=$('mb').onchange=draw;
+$('mm').onchange=$('mb').onchange=draw;$('mf').onchange=()=>{fill();draw()};
 new ResizeObserver(resize).observe(box);
 /* controls */
 function jump(c){$('code').value=c;show();zoomSel()}
 document.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{const j=b.dataset.j;if(j=='ex')return jump('086060003000000010286000000000');
 const a=PARCELS.filter(p=>p[10]&&p[1]>=1);const t=j=='vul'?a.reduce((m,p)=>p[4]>m[4]?p:m):a.filter(p=>p[2]).reduce((m,p)=>p[4]<m[4]?p:m);jump(t[0])});
 document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{$('k').value=b.dataset.k;show()});
-$('code').value=(location.hash.match(/p=(\d{30})/)||[])[1]||'086060003000000010286000000000';$('code').oninput=show;$('k').oninput=show;$('all').onchange=fill;
+$('code').value=(location.hash.match(/p=(\d{30})/)||[])[1]||'086060003000000010286000000000';$('code').oninput=show;$('k').oninput=show;
 fill();resize();if(HAS_GEO)fitTo(allB());show();
 if(HAS_GEO&&location.hash.match(/p=\d{30}/))zoomSel();
+
+(function(){
+ const month=document.getElementById('sixMonth'),root=document.getElementById('sixCropGrid');
+ if(!month||!root)return;
+ const labels={'Cassava':'🌱','Dry bean':'🫘','Maize':'🌽','Rice':'🍚','Sorghum':'🌾','Tomato':'🍅'};
+ const d=window.ROTATION_RESULTS;
+ if(!d||!Array.isArray(d.crops)){
+  root.innerHTML='<div class="six-empty">Six-crop model finished in Colab, but this browser still needs the exported <b>rotation_results.js</b> file beside the HTML. The original <b>crop_results.js</b> only contains three crops.</div>';
+  return;
+ }
+ const render=()=>{
+  const m=Number(month.value);
+  const rows=d.crops.filter(x=>Number(x.month)===m&&Number.isFinite(Number(x.mean_deficit))).sort((a,b)=>Number(a.mean_deficit)-Number(b.mean_deficit));
+  if(!rows.length){root.innerHTML='<div class="six-empty">No complete modeled cycles for this month.</div>';return}
+  root.innerHTML=rows.map((r,i)=>`<article class="six-crop-card ${i===0?'best':''}"><h3>${labels[r.crop]||'🌱'} ${r.crop}</h3><div class="six-number">${Number(r.mean_deficit).toFixed(2)} <small>mm/day</small></div><small>Modeled mean daily climatic shortfall · ${Number(r.n)} complete simulations${i===0?' · Lowest in this month':''}</small></article>`).join('');
+ };
+ month.value='4';month.addEventListener('change',render);render();
+})();
+(function(){
+ const target=document.getElementById('rotationEvidence');
+ const d=window.ROTATION_RESULTS;
+ if(!target||!d||!Array.isArray(d.rotations))return;
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const icons={'Cassava':'🌱','Dry bean':'🫘','Maize':'🌽','Rice':'🍚','Sorghum':'🌾','Tomato':'🍅'};
+ const durations={'Cassava':210,'Dry bean':100,'Maize':120,'Rice':120,'Sorghum':120,'Tomato':130};
+ const palette={'Cassava':'#70b47b','Dry bean':'#9f704d','Maize':'#e4c34e','Rice':'#eee9d8','Sorghum':'#c4a05e','Tomato':'#d84b45'};
+ const titles={'A':'Diversified field sequence','B':'Cereals and horticulture','C':'Four-crop sequence'};
+ target.innerHTML=d.rotations.map(r=>{
+  const seq=(d.templates||{})[r.rotation]||[];
+  const used=seq.reduce((n,c)=>n+(durations[c]||0),0);
+  const gaps=Math.max(0,seq.length-1)*14;
+  const rest=Math.max(0,730-used-gaps);
+  const track=seq.map((c,i)=>`<span title="${esc(c)}: ${durations[c]} modeled days" style="flex:${durations[c]};background:${palette[c]||'#6ec7b0'}"></span>${i<seq.length-1?'<span class="rotation-gap" title="14-day unmodeled management gap" style="flex:14"></span>':''}`).join('')+`<span class="rotation-idle" title="Remaining time not modeled" style="flex:${rest||0.01}"></span>`;
+  return `<article class="rotation-card">
+    <div class="rotation-head"><span class="rotation-letter">${esc(r.rotation)}</span><div><div class="rotation-heading">${titles[r.rotation]||'Rotation scenario'}</div><div class="rotation-sub">Proposed 24-month sequence · not field-validated</div></div></div>
+    <div class="rotation-steps">${seq.map((c,i)=>`${i?'<span class="rotation-step-arrow">→</span>':''}<span class="rotation-step"><span class="emoji">${icons[c]||'🌱'}</span>${esc(c)}</span>`).join('')}</div>
+    <div class="rotation-track" aria-label="Illustrative 24-month crop occupancy">${track}</div>
+    <div class="rotation-scale"><span>Month 0</span><span>Colored: modeled crop days · Stripes: 14-day gaps</span><span>Month 24</span></div>
+    <div class="rotation-stats"><div class="rotation-stat"><b>${Number(r.deficit).toFixed(2)}</b><small>mm/day · climatic shortfall per cropped day</small></div><div class="rotation-stat"><b>${Number(r.cropped_days)}</b><small>Days under modeled crops · ${Number(r.families)} botanical families</small></div></div>
+    ${Number(r.rice_extra)>0?'<div class="warn">🌊 Flooded rice: additional illustrative '+Number(r.rice_extra).toFixed(0)+' mm per rice cycle, excluded from the deficit score</div>':''}
+    <div class="rotation-footer">${Number(r.n)} complete historical simulations · No yield prediction · Crop order and 14-day gaps are assumptions</div>
+  </article>`;
+ }).join('');
+})();
 </script></body></html>
