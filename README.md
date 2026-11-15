@@ -1,5 +1,4 @@
 # Repelón Risk Lens
-<img width="2800" height="1257" alt="Diagram" src="https://github.com/user-attachments/assets/8e3d383e-6a5c-4b0f-8390-2b57bd520a6a" />
 
 **Explore environmental vulnerability and crop-rotation scenarios in Repelón, Atlántico, Colombia.**  
 NASA Space Apps Challenge 2026 — *Field Shift: Adapting Farms with NASA Data*
@@ -7,6 +6,8 @@ NASA Space Apps Challenge 2026 — *Field Shift: Adapting Farms with NASA Data*
 **Live demo (after publishing this package):** https://sasantos02.github.io/nasa-space-apps-repelon/
 
 > **Research prototype, not a crop prescription.** Parcel-level environmental screening and regional crop-climate scenarios are two complementary analyses at **different spatial scales**. The tool does not predict yields, diagnose crop damage, or confirm that a proposed rotation is suitable for a specific field.
+
+<img width="2800" height="1257" alt="Diagram" src="https://github.com/user-attachments/assets/8e3d383e-6a5c-4b0f-8390-2b57bd520a6a" />
 
 ## Try the interactive explorer
 
