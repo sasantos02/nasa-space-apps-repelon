@@ -3,7 +3,7 @@
 NASA Space Apps Challenge 2026 · *Field Shift: Adapting Farms with NASA Data*
 
 **Live demo:** https://sasantos02.github.io/nasa-space-apps-repelon/  
-**Start here:** [How it works](#how-it-works) · [Results](#results) · [Limitations](06_documentos/LIMITATIONS.md) · [Rotation scenarios](06_documentos/ROTATION_SCENARIOS_EN.md) · [Notebook guide](02_cuaderno/NOTEBOOK_GUIDE_EN.md)
+**Start here:** [How it works](#how-it-works) · [Results](#results) · [Limitations](main/LIMITATIONS.md) · [Rotation scenarios](06_documentos/ROTATION_SCENARIOS_EN.md) · [Notebook guide](02_cuaderno/NOTEBOOK_GUIDE_EN.md)
 
 ## What it is
 Repelón Risk Lens is a transparent, rule-based (no machine learning) prototype for **screening environmental vulnerability across 1,848 unique rural parcels** and exploring crop-rotation alternatives in Repelón, Atlántico. It combines rainfall from NASA GPM IMERG with vegetation indicators from Sentinel-2, cadastral parcel boundaries, land-cover context and municipal agricultural statistics.
