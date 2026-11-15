@@ -1,4 +1,5 @@
 # Repelón Risk Lens
+<img width="2800" height="1257" alt="Diagram" src="https://github.com/user-attachments/assets/8e3d383e-6a5c-4b0f-8390-2b57bd520a6a" />
 
 **Explore environmental vulnerability and crop-rotation scenarios in Repelón, Atlántico, Colombia.**  
 NASA Space Apps Challenge 2026 — *Field Shift: Adapting Farms with NASA Data*
