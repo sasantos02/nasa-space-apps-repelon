@@ -115,3 +115,13 @@ The following files are provided under `research/outputs/six_crop_rotations/`:
 - `assumptions.json`: source URLs and explicit modeling limitations.
 
 The accompanying `rotation_results.js` at repository root is byte-for-byte identical to the file exported alongside these CSVs. Independent checks confirm that each rotation total equals the sum of its segments, its reported shortfall/day equals shortfall divided by cropped days, and successive crop segments have 14-day gaps without overlaps. Baseline means round to A **1.94**, B **2.75**, C **2.12** mm/day. These checks establish computational consistency, **not agronomic field validation**.
+
+AI / Super Intelligence Use Disclosure
+
+Repelón Risk Lens was developed with assistance from generative AI tools, including ChatGPT, for Python and JavaScript coding, debugging, data-processing workflows, documentation, and visual communication.
+
+AI assistance was also used to review calculations, organize research outputs, and improve the accessibility of technical explanations. The environmental indicators and crop-water calculations use documented satellite, meteorological, cadastral, and agricultural data sources rather than AI-generated observations.
+
+AI-assisted code and documentation were reviewed and tested during development. The project remains an exploratory prototype and has not been validated through field trials.
+
+AI-generated illustrations and diagrams are identified separately where used.
