@@ -2,6 +2,8 @@
 **Parcel-level agroclimatic risk and rotation scenarios for Repelón (Atlántico, Colombia)**
 NASA Space Apps Challenge 2026 · *Field Shift: Adapting Farms with NASA Data*
 
+**Live demo:** https://sasantos02.github.io/nasa-space-apps-repelon/
+
 ## What it is
 A transparent, rule-based (no machine learning) decision-support tool that ranks **1,848 unique rural parcels** by agroclimatic risk, using NASA GPM IMERG rainfall and Sentinel-2 vegetation indices. It also lays out **three crop-rotation scenarios** (current practice + two alternatives) with declared assumptions, evidence, information gaps and risks that need local review.
 
@@ -38,7 +40,7 @@ See [`06_documentos/ROTATION_SCENARIOS_EN.md`](06_documentos/ROTATION_SCENARIOS_
 | NASA Earth observations | **Covered, thin:** GPM IMERG V07 only (~11 km, so hazard varies little between parcels; Sentinel-2 drives the ranking) |
 | Local soil information | **Partial:** ISRIC SoilGrids clay 0–5 cm, global 250 m (not local), context only, not in the risk score; 1,180 of 1,848 unique parcels have a value (tiny parcels return none) |
 | Crop characteristics | **Partial:** qualitative, from cited sources (UPRA EVA, AGROSAVIA); no crop parameters |
-| Farmer priorities | **Not implemented.** Planned: adjustable priority weights on the scenario comparison |
+| Farmer priorities | **Partial:** adjustable priority sliders re-rank three scenarios; weights are assumptions, no field validation |
 | Explore rotation strategies | **Partial:** 3 scenarios with assumptions; a calendar-overlap reading; no simulation |
 | Adapt to changing conditions | **Covered at screening level:** rainfall what-if scenarios |
 | Make uncertainty visible | **Covered:** sensitivity test, limitations, labelled assumptions |
@@ -50,6 +52,7 @@ See [`06_documentos/ROTATION_SCENARIOS_EN.md`](06_documentos/ROTATION_SCENARIOS_
 ## Repository map
 - `02_cuaderno/` Colab notebook (Earth Engine) that produces the results.
 - `03_salidas_finales/` final parcel table (`predios_para_demo_2026-11-15.csv`), monthly calendar, example-parcel NDVI curve.
+- `index.html`, `data.js`, `geo.js` interactive map (parcel polygons from the cadastral layer, Esri imagery base map, rainfall what-if, editable rotation calendars).
 - `complementary_analysis.py` → `tables/` (sensitivity, rain what-if, EVA by crop); `figures/` (risk map, district contrast, monthly calendar, rainfall scenarios).
 - `01_entradas/` inputs (district tables, EVA); `04_historico/` earlier runs; `05_evidencia/` visual checks; `06_documentos/` limitations, scenarios and logbook.
 - Parcel codes have 30 digits: open the CSVs as text or with Python (Excel corrupts them).
