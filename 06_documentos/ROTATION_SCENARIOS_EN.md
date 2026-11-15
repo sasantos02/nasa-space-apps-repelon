@@ -28,8 +28,12 @@ Parcel 086060003000000010286000000000. Tags: **[OWN DATA]** computed in this pro
 - **Information gaps:** soil, irrigation (the parcel is outside the district), seed, market, costs, yields.
 - **Risks needing local review:** short-cycle crops are the most exposed to a shifting rain calendar [CITED: Contexto Ganadero]; water access is unknown.
 
-## Not covered (declared)
+## Not covered and important limitations
 Farmer priorities are partially implemented through four adjustable weights that re-rank the three scenarios using simple indicators derived from their editable calendars. These weights are illustrative assumptions, not preferences collected through farmer surveys, and have not been validated with local producers or technicians.
+
+The tool does not simulate crop growth, yields, income, nutrient cycling, or long-term soil-health changes. Actual crops and rotations at individual parcel level are unknown.
+
+The scenarios are exploratory comparisons intended to support discussion and local assessment, not agronomic recommendations.
 
 The tool does not simulate crop growth, yields, income, nutrient cycling, or long-term soil-health changes. Soil organic carbon, erosion and nutrient availability are not assessed. Actual crops and rotations at individual parcel level are unknown.
 
