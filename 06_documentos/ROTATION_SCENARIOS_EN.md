@@ -29,8 +29,11 @@ Parcel 086060003000000010286000000000. Tags: **[OWN DATA]** computed in this pro
 - **Risks needing local review:** short-cycle crops are the most exposed to a shifting rain calendar [CITED: Contexto Ganadero]; water access is unknown.
 
 ## Not covered (declared)
-Farmer priorities are not implemented in this version (planned as adjustable weights). Typical priorities (dry-season water risk, dry-season feed, soil cover, sowing timing) are hypotheses to validate with local technicians and farmers, not findings. Soil health (organic carbon, erosion, nutrients) is not assessed.
+Farmer priorities are partially implemented through four adjustable weights that re-rank the three scenarios using simple indicators derived from their editable calendars. These weights are illustrative assumptions, not preferences collected through farmer surveys, and have not been validated with local producers or technicians.
 
+The tool does not simulate crop growth, yields, income, nutrient cycling, or long-term soil-health changes. Soil organic carbon, erosion and nutrient availability are not assessed. Actual crops and rotations at individual parcel level are unknown.
+
+The scenarios are exploratory comparisons intended to support discussion and local assessment, not agronomic recommendations.
 ## Sources (open each link and confirm the wording before submitting)
 - UPRA, Evaluaciones Agropecuarias Municipales (EVA) 2019–2025, file in `01_entradas/`.
 - Contexto Ganadero, silage of sorghum and maize for Atlántico livestock producers (AGROSAVIA): https://www.contextoganadero.com/ganaderia-sostenible/ganaderos-del-atlantico-reciben-silo-de-sorgo-y-maiz-para-sus-animales
