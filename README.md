@@ -58,8 +58,7 @@ See [`06_documentos/ROTATION_SCENARIOS_EN.md`](06_documentos/ROTATION_SCENARIOS_
 Run the notebook in Google Colab with an Earth Engine project, then run `python complementary_analysis.py` from the repository root.
 
 ## Use of AI
-AI assistants wrote the code and drafted the documentation. The author (not a programmer) defined the question and method and verified the output with an independent recalculation of all parcels, visual checks of sample parcels in satellite imagery, a rainfall cross-check with ERA5-Land and a sensitivity test.
-
+Code and documentation were drafted with AI assistants. The author defined the question and method and verified the results (independent recalculation, visual checks, ERA5-Land cross-check, sensitivity test).
 ## Next steps
 1. Calibrate with crop and cycle data per parcel and local technicians (UMATA), and connect each parcel's risk to each rotation scenario.
 2. Add farmer-priority weights and local soil data (IGAC); compare rainfall with IDEAM stations.
