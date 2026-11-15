@@ -7,7 +7,7 @@ NASA Space Apps Challenge 2026 — *Field Shift: Adapting Farms with NASA Data*
 
 > **Research prototype, not a crop prescription.** Parcel-level environmental screening and regional crop-climate scenarios are two complementary analyses at **different spatial scales**. The tool does not predict yields, diagnose crop damage, or confirm that a proposed rotation is suitable for a specific field.
 
-<img width="2800" height="1257" alt="Diagram" src="https://github.com/user-attachments/assets/8e3d383e-6a5c-4b0f-8390-2b57bd520a6a" />
+<img width="2800" height="1295" alt="Diagram" src="https://github.com/user-attachments/assets/02357d1f-fd7a-4b72-91c1-2c3ee67ef53e" />
 
 ## Try the interactive explorer
 
