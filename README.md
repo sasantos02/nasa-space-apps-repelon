@@ -6,7 +6,7 @@ NASA Space Apps Challenge 2026 · *Field Shift: Adapting Farms with NASA Data*
 **Start here:** [How it works](#how-it-works) · [Results](#results) · [Limitations](LIMITATIONS.md) · [Rotation scenarios](06_documentos/ROTATION_SCENARIOS_EN.md) · [Notebook guide](02_cuaderno/NOTEBOOK_GUIDE_EN.md)
 
 ## What it is
-Repelón Risk Lens is a transparent, rule-based (no machine learning) prototype for **screening environmental vulnerability across 1,848 unique rural parcels** and exploring crop-rotation alternatives in Repelón, Atlántico. It combines rainfall from NASA GPM IMERG with vegetation indicators from Sentinel-2, cadastral parcel boundaries, land-cover context and municipal agricultural statistics.
+Repelón Risk Lens is a transparent, rule-based prototype (no machine learning) that screens 1,848 cadastral parcels across Repelón, Atlántico, using satellite-derived environmental indicators. Within this dataset, 386 parcels are classified as predominantly agricultural or grassland according to ESA WorldCover 2021. The tool combines rainfall data from NASA GPM IMERG, vegetation indicators from Sentinel-2, cadastral boundaries, land-cover information and municipal agricultural statistics. This distinction is important: environmental screening covers the full parcel dataset, while agricultural interpretation requires additional caution and local validation.
 
 The tool connects two tasks: **(1) observe and screen environmental conditions at parcel level; (2) explore three illustrative management scenarios**—the current-practice baseline and two alternatives—using editable calendars and adjustable priority weights. Each scenario states its evidence, assumptions, information gaps and risks requiring local review.
 
