@@ -29,7 +29,7 @@ Parcel 086060003000000010286000000000. Tags: **[OWN DATA]** computed in this pro
 - **Risks needing local review:** short-cycle crops are the most exposed to a shifting rain calendar [CITED: Contexto Ganadero]; water access is unknown.
 
 ## Parcel counts used in the explorer
-"Agricultural" = ESA WorldCover cropland + grassland ≥ 50 % of the parcel: **386 unique parcels** (343 grassland-dominated, 39 cropland-dominated, 3 tree-dominated and 1 shrub-dominated). The other 1,462 parcels are non-agricultural or of uncertain use: their score is shown as an environmental reading, not as crop stress.
+"Agricultural" = ESA WorldCover cropland + grassland ≥ 50 % of the parcel: **386 unique parcels** (343 grassland-dominated, 39 cropland-dominated, 3 tree-dominated and 1 shrub-dominated). The last four have trees or shrubs as their single largest class, but cropland + grassland together still add up to 51–53 %, just above the 50 % threshold. The other 1,462 parcels are non-agricultural or of uncertain use: their score is shown as an environmental reading, not as crop stress.
 
 ## The four priority controls (all assumptions)
 Each editable calendar gets four scores from 0 to 1; the sliders weight them. They are simple shares, not yield or income models.
@@ -37,7 +37,12 @@ Each editable calendar gets four scores from 0 to 1; the sliders weight them. Th
 2. **Dry-season feed (reserve)** = dry months with reserve feed ÷ dry months.
 3. **Soil covered** = 1 − fallow months ÷ 12 (the only proxy for soil health here).
 4. **Sowing with the rains** = crop months that are not dry ÷ crop months (0 if the plan has no crop).
-The page repeats the ranking under 300 random slider settings. If one scenario leads, that comes from how the calendars are defined (B combines reserve feed and a crop window), not from field evidence.
+The page repeats the ranking under 300 random slider settings (fixed seed, so the percentages are reproducible; they change only when the calendars or the rain factor change). If one scenario leads, that comes from how the calendars are defined (B combines reserve feed and a crop window), not from field evidence.
+
+## Why these calendars (all [ASSUMPTION], to be reviewed locally)
+- **A:** pasture all year, because the parcel's cover is grassland. Viable only if stocking rate and water for animals allow it (unknown).
+- **B:** reserve feed in December–March (the four months below 50 mm in the GPM calendar) and a forage-crop window in May–August (same window as C). B is therefore pasture + reserve + a crop window, not just grazing with silage. It would need area and water for the forage crop and silage equipment (unknown).
+- **C:** crop in May–August, after April when monthly rain passes 100 mm [OWN DATA]; consistent with traditional sowing late April to May [CITED: Contexto Ganadero] and with about 70 % of transitory sowing falling in the first semester [CITED, own calculation on EVA]. April is a fallow month for land preparation and the other months are cover (assumptions). It would need reliable rain or irrigation, suitable soil, seed and a market (unknown).
 
 ## Not covered and important limitations
 Farmer priorities are partially implemented through four adjustable weights that re-rank the three scenarios. These weights are illustrative assumptions, not preferences collected through farmer surveys, and have not been validated with local producers or technicians.
